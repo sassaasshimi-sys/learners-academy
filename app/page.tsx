@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { getRoleRedirectPath } from '@/lib/auth-mock'
 import { Logo } from '@/components/logo'
 import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
   const router = useRouter()
@@ -22,11 +23,18 @@ export default function HomePage() {
   }, [isAuthenticated, isLoading, user, router])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
-      <Logo size="xl" href={null} className="mb-8" />
-      <div className="flex items-center gap-3 text-muted-foreground">
-        <Spinner className="w-5 h-5" />
-        <span>Loading...</span>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <Logo size="lg" className="mb-8" />
+      <Spinner className="w-12 h-12 text-primary" />
+      <div className="mt-8 text-center">
+        <p className="text-muted-foreground animate-pulse">Initializing your experience...</p>
+        <Button 
+          variant="link" 
+          className="mt-4 text-xs text-muted-foreground"
+          onClick={() => router.push('/auth/login')}
+        >
+          Stuck? Go to Login
+        </Button>
       </div>
     </div>
   )

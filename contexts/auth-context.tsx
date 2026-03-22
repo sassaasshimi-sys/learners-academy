@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const validatedUser = validateToken(token)
           
           if (validatedUser) {
+            console.log('Restored auth session for:', validatedUser.email)
             setState({
               user: validatedUser,
               isAuthenticated: true,
@@ -55,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Handle route protection
   useEffect(() => {
+    console.log(`Checking route protection for ${pathname} (Auth: ${state.isAuthenticated}, Loading: ${state.isLoading})`)
     if (state.isLoading) return
 
     const isAuthPage = pathname.startsWith('/auth')
@@ -100,8 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading: false,
       })
 
-      // Redirect to appropriate portal
-      router.push(getRoleRedirectPath(session.user.role))
+      // Redirect is handled by AuthProvider useEffect
+      // router.push(getRoleRedirectPath(session.user.role))
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }))
       throw error
@@ -127,8 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading: false,
       })
 
-      // Redirect to appropriate portal
-      router.push(getRoleRedirectPath(session.user.role))
+      // Redirect is handled by AuthProvider useEffect
+      // router.push(getRoleRedirectPath(session.user.role))
     } catch (error) {
       setState(prev => ({ ...prev, isLoading: false }))
       throw error

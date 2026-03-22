@@ -100,7 +100,22 @@ export default function AdminLayout({
   }
 
   if (!isAuthenticated || user?.role !== 'admin') {
-    return null
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="bg-destructive/10 text-destructive p-4 rounded-lg border border-destructive max-w-md text-center">
+          <h2 className="font-bold mb-2 text-lg">Access Denied</h2>
+          <p className="text-sm">You do not have permission to access the Administrator Portal.</p>
+          <p className="text-xs mt-2 opacity-70">Authenticated: {isAuthenticated ? 'Yes' : 'No'} | Role: {user?.role || 'None'}</p>
+          <Button 
+            variant="outline" 
+            className="mt-4 border-destructive text-destructive"
+            onClick={() => router.push('/auth/login')}
+          >
+            Back to Login
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   const userInitials = (user?.name || 'Administrator')

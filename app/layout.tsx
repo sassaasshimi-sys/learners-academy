@@ -46,9 +46,31 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased">
         <AuthProvider>
-          {children}
+          <div id="root-content">
+            {children}
+          </div>
         </AuthProvider>
         <Analytics />
+        {/* Simple Diagnostic Overlay for fatal JS crashes */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.onerror = function(msg, url, lineNo, columnNo, error) {
+            var body = document.body;
+            var errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.bottom = '10px';
+            errorDiv.style.left = '10px';
+            errorDiv.style.background = 'rgba(255,0,0,0.9)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '10px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '9999';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.maxWidth = '80%';
+            errorDiv.innerHTML = '<strong>Fatal Error:</strong> ' + msg;
+            body.appendChild(errorDiv);
+            return false;
+          };
+        `}} />
       </body>
     </html>
   )

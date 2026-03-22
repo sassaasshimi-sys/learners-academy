@@ -106,7 +106,22 @@ export default function TeacherLayout({
   }
 
   if (!isAuthenticated || user?.role !== 'teacher') {
-    return null
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="bg-destructive/10 text-destructive p-4 rounded-lg border border-destructive max-w-md text-center">
+          <h2 className="font-bold mb-2 text-lg">Access Denied</h2>
+          <p className="text-sm">You do not have permission to access the Teacher Portal.</p>
+          <p className="text-xs mt-2 opacity-70">Authenticated: {isAuthenticated ? 'Yes' : 'No'} | Role: {user?.role || 'None'}</p>
+          <Button 
+            variant="outline" 
+            className="mt-4 border-destructive text-destructive"
+            onClick={() => router.push('/auth/login')}
+          >
+            Back to Login
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   const userInitials = (user?.name || 'Teacher')
@@ -243,7 +258,7 @@ export default function TeacherLayout({
           </DropdownMenu>
         </header>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 text-foreground">
           {children}
         </main>
       </SidebarInset>
