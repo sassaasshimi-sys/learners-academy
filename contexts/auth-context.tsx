@@ -26,11 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading: true,
   })
 
-  // Initialize auth state from localStorage
+  // Initialize auth state from sessionStorage
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        const stored = localStorage.getItem(AUTH_STORAGE_KEY)
+        const stored = sessionStorage.getItem(AUTH_STORAGE_KEY)
         if (stored) {
           const { token, user } = JSON.parse(stored)
           const validatedUser = validateToken(token)
@@ -59,6 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log(`Checking route protection for ${pathname} (Auth: ${state.isAuthenticated}, Loading: ${state.isLoading})`)
     if (state.isLoading) return
+
+    // Special exception for the Master Hub (homepage)
+    // We allow users to see the hub and choose their portal manually even if logged in
+    if (pathname === '/') return
 
     const isAuthPage = pathname.startsWith('/auth')
     const isProtectedRoute = pathname.startsWith('/admin') || 
@@ -99,8 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const session = await mockLogin(credentials)
       
-      // Store in localStorage
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+      // Store in sessionStorage
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
         token: session.token,
         user: session.user,
         expiresAt: session.expiresAt,
@@ -126,8 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const session = await mockRegister(data)
       
-      // Store in localStorage
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+      // Store in sessionStorage
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
         token: session.token,
         user: session.user,
         expiresAt: session.expiresAt,
@@ -152,7 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
       await mockLogout()
-      localStorage.removeItem(AUTH_STORAGE_KEY)
+      sessionStorage.removeItem(AUTH_STORAGE_KEY)
       
       setState({
         user: null,
