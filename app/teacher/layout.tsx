@@ -35,8 +35,9 @@ import { Spinner } from '@/components/ui/spinner'
 import {
   LayoutDashboard,
   BookOpen,
-  FileText,
-  CheckSquare,
+  Library,
+  ClipboardList,
+  FileCheck,
   BarChart3,
   Settings,
   LogOut,
@@ -56,14 +57,19 @@ const teacherNavItems = [
     icon: BookOpen,
   },
   {
-    title: 'Assignments',
-    href: '/teacher/assignments',
-    icon: FileText,
+    title: 'Library',
+    href: '/teacher/library',
+    icon: Library,
   },
   {
-    title: 'Submissions',
-    href: '/teacher/submissions',
-    icon: CheckSquare,
+    title: 'Assessments',
+    href: '/teacher/assessments',
+    icon: ClipboardList,
+  },
+  {
+    title: 'Results',
+    href: '/teacher/results',
+    icon: FileCheck,
   },
   {
     title: 'Progress',

@@ -1,4 +1,4 @@
-import type { Teacher, Student, Course, Assignment, Submission, DashboardStats, ChartData, Schedule } from '@/lib/types'
+import type { Teacher, Student, Course, Assignment, Submission, DashboardStats, ChartData, Schedule, Question, AssessmentTemplate, StudentTest } from '@/lib/types'
 
 export const mockTeachers: Teacher[] = [
   {
@@ -416,5 +416,56 @@ export const mockSchedules: Schedule[] = [
     timing: '02:00 PM - 03:00 PM',
     roomNumber: '205',
     days: ['Tue', 'Thu'],
+  },
+]
+
+export const mockQuestions: Question[] = [
+  {
+    id: 'q-1',
+    category: 'Grammar',
+    type: 'MCQ',
+    content: 'Which of the following is an example of the Present Perfect tense?',
+    options: ['I went to the store.', 'I have gone to the store.', 'I am going to the store.', 'I will go to the store.'],
+    correctAnswer: 'I have gone to the store.',
+    phase: 'First Test',
+  },
+  {
+    id: 'q-2',
+    category: 'Vocab & Idioms',
+    type: 'MCQ',
+    content: 'What does the idiom "piece of cake" mean?',
+    options: ['Something very easy.', 'Something delicious.', 'A small portion.', 'A complex task.'],
+    correctAnswer: 'Something very easy.',
+    phase: 'First Test',
+  },
+  {
+    id: 'q-3',
+    category: 'Reading',
+    type: 'Subjective',
+    content: 'Read the text and summarize the main argument in your own words.',
+    phase: 'Last Test',
+  },
+  {
+    id: 'q-4',
+    category: 'Grammar',
+    type: 'MCQ',
+    content: 'Identify the passive voice sentence.',
+    options: ['The cat chased the mouse.', 'The mouse was chased by the cat.', 'The cat is chasing the mouse.', 'The cat will chase the mouse.'],
+    correctAnswer: 'The mouse was chased by the cat.',
+    phase: 'Last Test',
+  },
+]
+
+export const mockAssessments: AssessmentTemplate[] = [
+  {
+    id: 'test-1',
+    title: 'Mid-term Assessment 2024',
+    phase: 'First Test',
+    classLevels: ['Level One', 'Level Two'],
+    nature: 'Mixed',
+    totalMarks: 50,
+    durationMinutes: 60,
+    createdAt: '2024-03-01',
+    status: 'active',
   },
 ]

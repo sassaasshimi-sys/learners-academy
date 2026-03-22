@@ -26,8 +26,8 @@ const studentNavItems = [
     icon: BookOpen,
   },
   {
-    title: "Assignments",
-    href: "/student/assignments",
+    title: "Assessments",
+    href: "/student/assessments",
     icon: ClipboardList,
   },
   {

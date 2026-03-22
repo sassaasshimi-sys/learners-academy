@@ -6,14 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,7 +26,7 @@ import { toast } from 'sonner'
 import {
   Plus,
   Search,
-  CalendarDays,
+  Calendar,
   Clock,
   MapPin,
   Trash2,
@@ -44,49 +36,27 @@ import { mockSchedules, mockTeachers } from '@/lib/mock-data'
 import type { Schedule } from '@/lib/types'
 
 const CLASS_LEVELS = [
-  'Pre-Foundation',
-  'Foundation One',
-  'Foundation Two',
-  'Foundation Three',
-  'Beginners',
-  'Level One',
-  'Level Two',
-  'Level Three',
-  'Level Four',
-  'Level Five',
-  'Level Six',
-  'Level Advanced',
-  'Professional Advanced',
-  'Speaking Class',
-  'Grammar Speaking Class',
-  'IELTS Preparation Course'
+  'Pre-Foundation', 'Foundation One', 'Foundation Two', 'Foundation Three',
+  'Beginners', 'Level One', 'Level Two', 'Level Three', 'Level Four', 'Level Five', 'Level Six',
+  'Level Advanced', 'Professional Advanced',
+  'Speaking Class', 'Grammar Speaking Class', 'IELTS Preparation Course'
 ]
 
-const TIME_SLOTS = [
-  '08:00 AM - 09:00 AM',
-  '09:00 AM - 10:00 AM',
-  '10:00 AM - 11:00 AM',
-  '11:00 AM - 12:00 PM',
-  '12:00 PM - 01:00 PM',
-  '01:00 PM - 02:00 PM',
-  '02:00 PM - 03:00 PM',
-  '03:00 PM - 04:00 PM',
-  '04:00 PM - 05:00 PM',
-  '05:00 PM - 06:00 PM',
-  '06:00 PM - 07:00 PM',
-  '07:00 PM - 08:00 PM',
-  '08:00 PM - 09:00 PM',
+const TIMINGS = [
+  '8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM',
+  '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM',
+  '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM', '4:00 PM - 5:00 PM',
+  '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM'
 ]
 
 export default function SchedulePage() {
   const [schedules, setSchedules] = useState<Schedule[]>(mockSchedules)
   const [searchQuery, setSearchQuery] = useState('')
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isAddOpen, setIsAddOpen] = useState(false)
 
   const filteredSchedules = schedules.filter(s =>
-    s.classTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.teacherName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    s.className.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.teacherName.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleAddSchedule = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,37 +64,31 @@ export default function SchedulePage() {
     const formData = new FormData(e.currentTarget)
     
     const newSchedule: Schedule = {
-      id: `schedule-${Date.now()}`,
-      classTitle: formData.get('classTitle') as string,
+      id: `sch-${Date.now()}`,
+      className: formData.get('className') as string,
       teacherName: formData.get('teacherName') as string,
       timing: formData.get('timing') as string,
       roomNumber: formData.get('roomNumber') as string,
-      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], // Default full week for simplicity
+      days: ['Mon', 'Wed', 'Fri'], // Default days
     }
 
-    setSchedules([...schedules, newSchedule])
-    setIsAddDialogOpen(false)
+    setSchedules([newSchedule, ...schedules])
+    setIsAddOpen(false)
     toast.success('Schedule created successfully')
-  }
-
-  const handleDelete = (id: string) => {
-    setSchedules(schedules.filter(s => s.id !== id))
-    toast.success('Schedule removed')
   }
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-foreground">
-            Class Schedule
+            Academic Schedule
           </h1>
           <p className="text-muted-foreground mt-1">
-            Manage academic timings and classroom assignments
+            Manage class timings, room assignments, and teacher rotations.
           </p>
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -133,16 +97,16 @@ export default function SchedulePage() {
           </DialogTrigger>
           <DialogContent className="max-w-sm">
             <DialogHeader>
-              <DialogTitle>Create Schedule</DialogTitle>
+              <DialogTitle>Add New Schedule</DialogTitle>
               <DialogDescription>
-                Assign a teacher and room to a class time.
+                Assign a class level to a teacher and room.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddSchedule}>
               <FieldGroup className="py-4 space-y-4">
                 <Field>
-                  <FieldLabel>Class</FieldLabel>
-                  <Select name="classTitle" required>
+                  <FieldLabel>Class Level</FieldLabel>
+                  <Select name="className" required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select class" />
                     </SelectTrigger>
@@ -153,7 +117,6 @@ export default function SchedulePage() {
                     </SelectContent>
                   </Select>
                 </Field>
-
                 <Field>
                   <FieldLabel>Teacher</FieldLabel>
                   <Select name="teacherName" required>
@@ -167,129 +130,103 @@ export default function SchedulePage() {
                     </SelectContent>
                   </Select>
                 </Field>
-
                 <Field>
                   <FieldLabel>Class Timing</FieldLabel>
                   <Select name="timing" required>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select time slot" />
+                      <SelectValue placeholder="Select one hour slot" />
                     </SelectTrigger>
                     <SelectContent>
-                      {TIME_SLOTS.map(slot => (
-                        <SelectItem key={slot} value={slot}>{slot}</SelectItem>
+                      {TIMINGS.map(time => (
+                        <SelectItem key={time} value={time}>{time}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </Field>
-
                 <Field>
                   <FieldLabel>Room Number</FieldLabel>
-                  <Input name="roomNumber" placeholder="e.g. 101" required />
+                  <Input name="roomNumber" placeholder="e.g. 101, Lab A" required />
                 </Field>
               </FieldGroup>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Create Schedule</Button>
+                <Button type="submit">Save Schedule</Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Grid Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Active Schedules</CardDescription>
-            <CardTitle className="text-2xl">{schedules.length}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Rooms in Use</CardDescription>
-            <CardTitle className="text-2xl">{new Set(schedules.map(s => s.roomNumber)).size}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Daily Classes</CardDescription>
-            <CardTitle className="text-2xl">{schedules.length}</CardTitle>
-          </CardHeader>
-        </Card>
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search classes or teachers..." 
+            className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* Schedule Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>Master Schedule</CardTitle>
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search schedule..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-lg border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead>Class & Teacher</TableHead>
-                  <TableHead>Timing</TableHead>
-                  <TableHead>Room</TableHead>
-                  <TableHead className="w-[100px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredSchedules.map((schedule) => (
-                  <TableRow key={schedule.id} className="hover:bg-muted/30 transition-colors">
-                    <TableCell>
-                      <div className="space-y-1">
-                        <p className="font-medium text-foreground">{schedule.classTitle}</p>
-                        <p className="text-xs text-muted-foreground">{schedule.teacherName}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        <span className="text-sm">{schedule.timing}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-code">Room {schedule.roomNumber}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => handleDelete(schedule.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {filteredSchedules.map((item) => (
+          <Card key={item.id} className="hover-lift border-none shadow-sm ring-1 ring-border group transition-all">
+            <CardHeader className="pb-3 flex flex-row items-start justify-between">
+              <div className="space-y-1">
+                <Badge variant="outline" className="text-[10px] tracking-widest uppercase font-bold text-primary border-primary/20 bg-primary/5">
+                  Confirmed
+                </Badge>
+                <CardTitle className="text-xl font-serif text-foreground leading-tight">{item.className}</CardTitle>
+                <CardDescription className="font-medium text-accent">
+                  Prof. {item.teacherName}
+                </CardDescription>
+              </div>
+              <div className="flex gap-1 opacity-10 group-hover:opacity-100 transition-opacity">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted group/edit">
+                  <Edit className="w-3.5 h-3.5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => setSchedules(schedules.filter(s => s.id !== item.id))}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-0">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="p-1.5 rounded bg-muted/50">
+                    <Clock className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="font-medium">{item.timing}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="p-1.5 rounded bg-muted/50">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </div>
+                  <span>Room {item.roomNumber}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="p-1.5 rounded bg-muted/50">
+                    <Calendar className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex gap-1">
+                    {item.days.map(day => (
+                      <Badge key={day} variant="secondary" className="px-1 text-[9px] uppercase font-bold">{day}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }

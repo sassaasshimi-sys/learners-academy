@@ -20,7 +20,7 @@ import {
   Calendar,
   BookOpen,
   Eye,
-  FileText,
+  ClipboardList,
 } from 'lucide-react'
 import { mockCourses, mockStudents, mockAssignments } from '@/lib/mock-data'
 import type { Course } from '@/lib/types'
@@ -158,7 +158,7 @@ export default function TeacherClassesPage() {
               <TabsList className="w-full">
                 <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
                 <TabsTrigger value="students" className="flex-1">Students</TabsTrigger>
-                <TabsTrigger value="assignments" className="flex-1">Assignments</TabsTrigger>
+                <TabsTrigger value="assessments" className="flex-1">Assessments</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-4 mt-4">
@@ -237,13 +237,13 @@ export default function TeacherClassesPage() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="assignments" className="mt-4">
+              <TabsContent value="assessments" className="mt-4">
                 <div className="space-y-3">
                   {mockAssignments.filter(a => a.courseId === selectedCourse.id || a.teacherId === 'teacher-1').slice(0, 3).map((assignment) => (
                     <div key={assignment.id} className="p-4 rounded-lg border">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-muted-foreground" />
+                          <ClipboardList className="w-4 h-4 text-muted-foreground" />
                           <h4 className="font-medium">{assignment.title}</h4>
                         </div>
                         <Badge 

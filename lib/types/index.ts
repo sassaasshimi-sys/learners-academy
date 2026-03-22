@@ -106,3 +106,42 @@ export interface Schedule {
   roomNumber: string
   days: string[]
 }
+
+export type QuestionCategory = 'Grammar' | 'Vocab & Idioms' | 'Listening' | 'Reading' | 'Speaking' | 'Writing'
+export type QuestionType = 'MCQ' | 'Subjective'
+
+export interface Question {
+  id: string
+  category: QuestionCategory
+  type: QuestionType
+  content: string
+  options?: string[] // For MCQ
+  correctAnswer?: string
+  phase: 'First Test' | 'Last Test' | 'Both'
+}
+
+export interface AssessmentTemplate {
+  id: string
+  title: string
+  phase: 'First Test' | 'Last Test'
+  classLevels: string[]
+  nature: 'MCQ' | 'Subjective' | 'Mixed'
+  totalMarks: number
+  durationMinutes: number
+  createdAt: string
+  status: 'active' | 'draft' | 'archived'
+}
+
+export interface StudentTest {
+  id: string
+  templateId: string
+  studentId: string
+  studentName: string
+  assignedAt: string
+  completedAt?: string
+  status: 'Not Started' | 'In Progress' | 'Completed'
+  randomizedQuestions: Question[]
+  answers: Record<string, string>
+  score?: number
+  feedback?: string
+}
