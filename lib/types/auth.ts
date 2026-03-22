@@ -6,6 +6,8 @@ export interface User {
   name: string
   role: UserRole
   avatar?: string
+  employeeId?: string
+  phone?: string
   createdAt: string
 }
 

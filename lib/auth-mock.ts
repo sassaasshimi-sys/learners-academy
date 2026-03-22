@@ -15,6 +15,8 @@ const mockUsers: User[] = [
     email: 'teacher@learnersacademy.com',
     name: 'Sarah Williams',
     role: 'teacher',
+    employeeId: 'EMP-001',
+    phone: '+92 300 1234567',
     avatar: '/images/avatars/teacher.png',
     createdAt: '2024-02-01T00:00:00Z',
   },

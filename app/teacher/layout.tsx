@@ -72,11 +72,6 @@ const teacherNavItems = [
     icon: FileCheck,
   },
   {
-    title: 'Progress',
-    href: '/teacher/progress',
-    icon: BarChart3,
-  },
-  {
     title: 'Settings',
     href: '/teacher/settings',
     icon: Settings,

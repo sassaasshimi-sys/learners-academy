@@ -99,7 +99,7 @@ export default function LibraryPage() {
               Add Question
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add to Library</DialogTitle>
               <DialogDescription>

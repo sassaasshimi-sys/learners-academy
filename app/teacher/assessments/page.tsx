@@ -36,15 +36,17 @@ import {
   Clock,
   ArrowRight,
 } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context'
 import { mockAssessments, mockCourses, mockQuestions } from '@/lib/mock-data'
 import type { AssessmentTemplate } from '@/lib/types'
 
-const myClasses = mockCourses.filter(c => c.teacherId === 'teacher-1')
-
 export default function AssessmentsPage() {
+  const { user } = useAuth()
   const [assessments, setAssessments] = useState<AssessmentTemplate[]>(mockAssessments)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+
+  const myClasses = mockCourses.filter(c => c.teacherId === user?.id)
 
   const filteredAssessments = assessments.filter(a =>
     a.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -104,7 +106,7 @@ export default function AssessmentsPage() {
               Generate Test
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Generate New Test</DialogTitle>
               <DialogDescription>
