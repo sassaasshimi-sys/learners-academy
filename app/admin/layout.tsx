@@ -37,6 +37,7 @@ import {
   Users,
   GraduationCap,
   BookOpen,
+  CalendarDays,
   Settings,
   LogOut,
   Bell,
@@ -63,6 +64,11 @@ const adminNavItems = [
     title: 'Classes',
     href: '/admin/classes',
     icon: BookOpen,
+  },
+  {
+    title: 'Schedule',
+    href: '/admin/schedule',
+    icon: CalendarDays,
   },
   {
     title: 'Settings',

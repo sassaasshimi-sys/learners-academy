@@ -1,4 +1,4 @@
-import type { Teacher, Student, Course, Assignment, Submission, DashboardStats, ChartData } from '@/lib/types'
+import type { Teacher, Student, Course, Assignment, Submission, DashboardStats, ChartData, Schedule } from '@/lib/types'
 
 export const mockTeachers: Teacher[] = [
   {
@@ -391,3 +391,30 @@ export function getSubmissionsByAssignment(assignmentId: string): Submission[] {
 export function getStudentSubmissions(studentId: string): Submission[] {
   return mockSubmissions.filter(s => s.studentId === studentId)
 }
+
+export const mockSchedules: Schedule[] = [
+  {
+    id: 'schedule-1',
+    classTitle: 'Level One',
+    teacherName: 'Sarah Williams',
+    timing: '08:00 AM - 09:00 AM',
+    roomNumber: '101',
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  },
+  {
+    id: 'schedule-2',
+    classTitle: 'Speaking Class',
+    teacherName: 'Michael Brown',
+    timing: '10:00 AM - 11:00 AM',
+    roomNumber: '102',
+    days: ['Mon', 'Wed', 'Fri'],
+  },
+  {
+    id: 'schedule-3',
+    classTitle: 'IELTS Preparation Course',
+    teacherName: 'Emily Chen',
+    timing: '02:00 PM - 03:00 PM',
+    roomNumber: '205',
+    days: ['Tue', 'Thu'],
+  },
+]

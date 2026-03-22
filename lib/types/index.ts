@@ -97,3 +97,12 @@ export interface ChartData {
   value: number
   [key: string]: string | number
 }
+
+export interface Schedule {
+  id: string
+  classTitle: string
+  teacherName: string
+  timing: string
+  roomNumber: string
+  days: string[]
+}

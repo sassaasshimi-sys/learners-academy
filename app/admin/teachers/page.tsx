@@ -103,7 +103,6 @@ export default function TeachersPage() {
       joinedAt: new Date().toISOString().split('T')[0],
       coursesCount: 0,
       studentsCount: 0,
-      assignedClass: formData.get('assignedClass') as string,
     }
     setTeachers([...teachers, newTeacher])
     setIsAddDialogOpen(false)
@@ -143,7 +142,7 @@ export default function TeachersPage() {
               Add Teacher
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-sm">
             <DialogHeader>
               <DialogTitle>Add New Teacher</DialogTitle>
               <DialogDescription>
@@ -165,21 +164,8 @@ export default function TeachersPage() {
                   <Input name="employeeId" placeholder="e.g. EMP-101" required />
                 </Field>
                 <Field>
-                  <FieldLabel>Phone Number (Pakistan)</FieldLabel>
+                  <FieldLabel>Phone Number</FieldLabel>
                   <Input name="phone" placeholder="+92 300 1234567" required />
-                </Field>
-                <Field>
-                  <FieldLabel>Assigned Class</FieldLabel>
-                  <Select name="assignedClass" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLASS_LEVELS.map(level => (
-                        <SelectItem key={level} value={level}>{level}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </Field>
               </FieldGroup>
               <DialogFooter>
