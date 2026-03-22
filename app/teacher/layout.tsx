@@ -1,7 +1,8 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
@@ -82,7 +83,16 @@ export default function TeacherLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, logout, isLoading, isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/auth/login')
+    } else if (!isLoading && isAuthenticated && user?.role !== 'teacher') {
+      router.push(`/${user?.role || 'auth/login'}`)
+    }
+  }, [isAuthenticated, isLoading, user, router])
 
   if (isLoading) {
     return (
@@ -99,11 +109,13 @@ export default function TeacherLayout({
     return null
   }
 
-  const userInitials = user?.name
+  const userInitials = (user?.name || 'Teacher')
     .split(' ')
+    .filter(Boolean)
     .map(n => n[0])
     .join('')
-    .toUpperCase() || 'T'
+    .toUpperCase()
+    .slice(0, 2) || 'T'
 
   return (
     <SidebarProvider>

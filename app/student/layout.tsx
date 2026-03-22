@@ -120,7 +120,13 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {user.name.split(" ").map(n => n[0]).join("")}
+                      {(user?.name || 'Student')
+                        .split(" ")
+                        .filter(Boolean)
+                        .map(n => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2) || 'S'}
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium sm:inline-block">

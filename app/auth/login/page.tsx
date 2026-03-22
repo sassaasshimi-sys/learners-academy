@@ -154,7 +154,10 @@ export default function LoginPage() {
             </button>
             <div className="flex items-center gap-3 mb-2">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedPortal?.gradient} flex items-center justify-center shadow-md`}>
-                {selectedPortal && <selectedPortal.icon className="w-5 h-5 text-white" />}
+                {selectedPortal && (() => {
+                  const Icon = selectedPortal.icon
+                  return <Icon className="w-5 h-5 text-white" />
+                })()}
               </div>
               <div>
                 <CardTitle className="font-serif text-xl">{selectedPortal?.title} Login</CardTitle>
