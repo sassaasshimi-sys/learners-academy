@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { toast } from 'sonner'
 import type { User, UserRole, AuthState, LoginCredentials, RegisterData } from '@/lib/types/auth'
 import { mockLogin, mockRegister, mockLogout, validateToken, getRoleRedirectPath } from '@/lib/auth-mock'
 
@@ -78,7 +79,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (state.isAuthenticated && isProtectedRoute) {
       const pathRole = pathname.split('/')[1] as UserRole
       if (state.user?.role !== pathRole) {
-        router.push(getRoleRedirectPath(state.user!.role))
+        const redirectPath = getRoleRedirectPath(state.user!.role)
+        console.log(`Role mismatch: ${state.user?.role} vs ${pathRole}. Redirecting to ${redirectPath}`)
+        
+        // Brief delay to allow the toast to be seen if navigating
+        toast.error(`Access Restricted`, {
+          description: `Your account is registered as a ${state.user?.role}. Redirecting to your designated portal.`,
+          duration: 4000,
+        })
+        
+        router.push(redirectPath)
       }
     }
   }, [state.isAuthenticated, state.isLoading, state.user, pathname, router])

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
+import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/auth-context'
 import './globals.css'
 
@@ -50,6 +51,7 @@ export default function RootLayout({
             {children}
           </div>
         </AuthProvider>
+        <Toaster position="top-right" richColors />
         <Analytics />
         {/* Simple Diagnostic Overlay for fatal JS crashes */}
         <script dangerouslySetInnerHTML={{ __html: `
