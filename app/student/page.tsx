@@ -133,7 +133,7 @@ export default function StudentAccessPage() {
 
                     <Button 
                       type="submit" 
-                      className="w-full h-12 text-md font-semibold tracking-wide" 
+                      className="w-full h-12 text-md font-semibold tracking-wide shadow-lg hover:shadow-primary/20 transition-all" 
                       disabled={isVerifying}
                     >
                       {isVerifying ? (
@@ -147,6 +147,15 @@ export default function StudentAccessPage() {
                           <ArrowRight className="w-4 h-4" />
                         </span>
                       )}
+                    </Button>
+
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      className="w-full text-xs text-muted-foreground uppercase tracking-widest font-bold h-10 hover:bg-primary/5 hover:text-primary transition-all"
+                      onClick={() => router.push('/')}
+                    >
+                      Return to Master Selection
                     </Button>
                   </form>
                 </CardContent>

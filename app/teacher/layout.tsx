@@ -135,18 +135,18 @@ export default function TeacherLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar className="border-r-0">
-        <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-          <Logo size="md" variant="light" showText={true} href="/teacher" />
+      <Sidebar className="border-r border-primary/5 bg-card/80 backdrop-blur-xl">
+        <SidebarHeader className="border-b border-primary/5 px-6 py-8">
+          <Logo size="md" variant="light" showText={true} href="/" />
         </SidebarHeader>
 
-        <SidebarContent className="px-2 py-4">
+        <SidebarContent className="px-3 py-6">
           <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-muted uppercase text-xs tracking-wider mb-2">
-              Teaching
+            <SidebarGroupLabel className="text-editorial-label mb-4 opacity-50">
+              Academy Faculty
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="gap-2">
                 {teacherNavItems.map((item) => {
                   const isActive = pathname === item.href || 
                     (item.href !== '/teacher' && pathname.startsWith(item.href))
@@ -155,11 +155,17 @@ export default function TeacherLayout({
                       <SidebarMenuButton 
                         asChild 
                         isActive={isActive}
+                        className={cn(
+                          "transition-premium h-11 px-4 rounded-xl",
+                          isActive 
+                            ? "bg-primary/5 text-primary font-bold shadow-sm" 
+                            : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+                        )}
                         tooltip={item.title}
                       >
                         <Link href={item.href} className="flex items-center gap-3">
-                          <item.icon className="w-5 h-5" />
-                          <span>{item.title}</span>
+                          <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-muted-foreground")} />
+                          <span className="tracking-tight">{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -170,24 +176,24 @@ export default function TeacherLayout({
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-sidebar-border p-4">
+        <SidebarFooter className="border-t border-primary/5 p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start gap-3 h-auto py-2 px-2 hover:bg-sidebar-accent">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-accent text-accent-foreground text-xs">
+              <Button variant="ghost" className="w-full justify-start gap-3 h-auto py-3 px-3 hover:bg-primary/5 rounded-xl transition-premium">
+                <Avatar className="h-9 w-9 ring-2 ring-primary/10">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  <p className="text-sm font-bold text-foreground truncate">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-sidebar-muted truncate">
-                    Teacher
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-60">
+                    Faculty Member
                   </p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-sidebar-muted" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -212,8 +218,8 @@ export default function TeacherLayout({
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+      <SidebarInset className="bg-background">
+        <header className="sticky top-0 z-10 flex h-20 items-center gap-4 border-b border-primary/5 bg-card/80 backdrop-blur-xl px-8">
           <SidebarTrigger className="-ml-2" />
           
           <div className="flex-1" />

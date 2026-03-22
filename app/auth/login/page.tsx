@@ -139,6 +139,13 @@ export default function LoginPage() {
                 Create an account
               </Link>
             </p>
+            <Button 
+              variant="ghost" 
+              className="w-full text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-all"
+              asChild
+            >
+              <Link href="/">Return to Master Selection</Link>
+            </Button>
           </CardFooter>
         </Card>
       ) : (
