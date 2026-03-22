@@ -1,17 +1,56 @@
 import * as React from 'react'
+import { motion, HTMLMotionProps } from 'framer-motion'
+import { STIFF_SPRING } from '@/lib/premium-motion'
 
 import { cn } from '@/lib/utils'
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
+interface CardProps extends React.ComponentProps<'div'> {
+  isHoverable?: boolean
+}
+
+function Card({ className, isHoverable = false, ...props }: CardProps) {
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 })
+  const cardRef = React.useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
+  }
+
+  const Comp = (isHoverable ? motion.div : 'div') as any
+  const hoverProps = isHoverable 
+    ? {
+        whileHover: { y: -5, scale: 1.01 },
+        transition: STIFF_SPRING
+      }
+    : {}
+
   return (
-    <div
+    <Comp
+      ref={cardRef}
       data-slot="card"
+      onMouseMove={handleMouseMove}
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-premium transition-all duration-300 relative group overflow-hidden',
+        isHoverable && 'hover:shadow-premium-lg cursor-pointer',
         className,
       )}
-      {...props}
-    />
+      {...props as any}
+      {...hoverProps}
+    >
+      {/* Dynamic Backlight */}
+      <div 
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, oklch(var(--primary) / 0.05), transparent 40%)`,
+        }}
+      />
+      {props.children}
+    </Comp>
   )
 }
 

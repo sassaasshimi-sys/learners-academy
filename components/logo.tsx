@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 interface LogoProps {
   className?: string
@@ -10,6 +11,7 @@ interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
   href?: string
   variant?: 'default' | 'light' | 'dark'
+  loading?: boolean
 }
 
 const sizeMap = {
@@ -24,7 +26,8 @@ export function Logo({
   showText = true, 
   size = 'md',
   href = '/',
-  variant = 'default'
+  variant = 'default',
+  loading = false,
 }: LogoProps) {
   const { image: imageSize, text: textSize } = sizeMap[size]
   
@@ -35,19 +38,22 @@ export function Logo({
       : 'text-foreground'
 
   const content = (
-    <div className={cn('flex items-center gap-3', className)}>
-      <div className="relative flex-shrink-0">
+    <div className={cn('flex items-center gap-3 relative', className)}>
+      <div className={cn(
+        'relative flex-shrink-0',
+        loading && 'after:absolute after:inset-0 after:bg-linear-to-r after:from-transparent after:via-white/70 after:to-transparent after:translate-x-[-100%] after:animate-shimmer overflow-hidden rounded-full'
+      )}>
         <Image
           src="/images/logo.png"
           alt="The Learners Academy Logo"
           width={imageSize}
           height={imageSize}
-          className="object-contain"
+          className={cn('object-contain transition-all duration-700', loading && 'opacity-50 grayscale contrast-125')}
           priority
         />
       </div>
       {showText && (
-        <div className={cn('flex flex-col leading-none', textColorClass)}>
+        <div className={cn('flex flex-col leading-none relative overflow-hidden', textColorClass)}>
           <span className={cn('font-serif font-semibold tracking-tight', textSize)}>
             The Learners
           </span>
@@ -56,12 +62,20 @@ export function Logo({
           )}>
             Academy
           </span>
+          {loading && (
+            <motion.div 
+              className="absolute inset-0 bg-linear-to-r from-transparent via-primary/20 to-transparent"
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            />
+          )}
         </div>
       )}
     </div>
   )
 
-  if (href) {
+  if (href && !loading) {
     return (
       <Link href={href} className="transition-opacity hover:opacity-90">
         {content}

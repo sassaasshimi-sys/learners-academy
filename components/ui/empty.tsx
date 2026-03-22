@@ -1,13 +1,18 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import { STAGGER_CONTAINER, STAGGER_ITEM } from '@/lib/premium-motion'
 
-function Empty({ className, ...props }: React.ComponentProps<'div'>) {
+function Empty({ className, ...props }: React.ComponentProps<typeof motion.div>) {
   return (
-    <div
+    <motion.div
       data-slot="empty"
+      variants={STAGGER_CONTAINER}
+      initial="hidden"
+      animate="visible"
       className={cn(
-        'flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12',
+        'flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-xl border border-dashed p-10 text-center text-balance glass shadow-premium transition-all duration-500',
         className,
       )}
       {...props}
@@ -15,10 +20,11 @@ function Empty({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function EmptyHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyHeader({ className, ...props }: React.ComponentProps<typeof motion.div>) {
   return (
-    <div
+    <motion.div
       data-slot="empty-header"
+      variants={STAGGER_ITEM}
       className={cn(
         'flex max-w-sm flex-col items-center gap-2 text-center',
         className,
@@ -34,7 +40,7 @@ const emptyMediaVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        icon: "bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6",
+        icon: "bg-primary/5 text-primary flex size-12 shrink-0 items-center justify-center rounded-2xl [&_svg:not([class*='size-'])]:size-7 transition-premium hover:bg-primary/10",
       },
     },
     defaultVariants: {
@@ -47,10 +53,11 @@ function EmptyMedia({
   className,
   variant = 'default',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof emptyMediaVariants>) {
+}: React.ComponentProps<typeof motion.div> & VariantProps<typeof emptyMediaVariants>) {
   return (
-    <div
-      data-slot="empty-icon"
+    <motion.div
+      data-slot="empty-media"
+      variants={STAGGER_ITEM}
       data-variant={variant}
       className={cn(emptyMediaVariants({ variant, className }))}
       {...props}
@@ -58,22 +65,24 @@ function EmptyMedia({
   )
 }
 
-function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyTitle({ className, ...props }: React.ComponentProps<typeof motion.div>) {
   return (
-    <div
+    <motion.div
       data-slot="empty-title"
-      className={cn('text-lg font-medium tracking-tight', className)}
+      variants={STAGGER_ITEM}
+      className={cn('text-xl font-serif font-semibold tracking-tight text-foreground', className)}
       {...props}
     />
   )
 }
 
-function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
+function EmptyDescription({ className, ...props }: React.ComponentProps<typeof motion.p>) {
   return (
-    <div
+    <motion.p
       data-slot="empty-description"
+      variants={STAGGER_ITEM}
       className={cn(
-        'text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4',
+        'text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed text-editorial-meta [&>a]:underline [&>a]:underline-offset-4',
         className,
       )}
       {...props}
@@ -81,10 +90,11 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
-function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
+function EmptyContent({ className, ...props }: React.ComponentProps<typeof motion.div>) {
   return (
-    <div
+    <motion.div
       data-slot="empty-content"
+      variants={STAGGER_ITEM}
       className={cn(
         'flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance',
         className,
@@ -102,3 +112,4 @@ export {
   EmptyContent,
   EmptyMedia,
 }
+export { PremiumIllustration } from './premium-illustration'

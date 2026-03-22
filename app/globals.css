@@ -67,6 +67,14 @@
   --sidebar-border: oklch(0.28 0.03 260);
   --sidebar-ring: oklch(0.62 0.17 240);
   --sidebar-muted: oklch(0.65 0.02 250);
+
+  /* Premium Shadow Tokens */
+  --shadow-premium: 0 2px 4px oklch(0 0 0 / 0.02), 
+                    0 4px 8px oklch(0 0 0 / 0.02), 
+                    0 8px 16px oklch(0 0 0 / 0.02);
+  --shadow-premium-lg: 0 10px 20px oklch(0 0 0 / 0.04), 
+                       0 20px 40px oklch(0 0 0 / 0.04), 
+                       0 30px 60px oklch(0 0 0 / 0.04);
 }
 
 .dark {
@@ -103,6 +111,13 @@
   --sidebar-border: oklch(0.28 0.02 250);
   --sidebar-ring: oklch(0.65 0.17 240);
   --sidebar-muted: oklch(0.55 0.02 250);
+
+  --shadow-premium: 0 2px 4px oklch(0 0 0 / 0.1), 
+                    0 4px 8px oklch(0 0 0 / 0.1), 
+                    0 8px 16px oklch(0 0 0 / 0.1);
+  --shadow-premium-lg: 0 10px 20px oklch(0 0 0 / 0.2), 
+                       0 20px 40px oklch(0 0 0 / 0.2), 
+                       0 30px 60px oklch(0 0 0 / 0.2);
 }
 
 @theme inline {
@@ -157,9 +172,25 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground shrink-0 overflow-x-hidden;
   }
   
+  /* Custom Premium Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+
   /* Premium Typography */
   h1, h2, h3 {
     font-family: var(--font-serif);
@@ -180,31 +211,87 @@
   }
 }
 
-/* Premium Transitions */
-.transition-premium {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+@layer utilities {
+  /* Shimmer Animation */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .animate-shimmer {
+    animation: shimmer 2s infinite ease-in-out;
+  }
 
-.hover-lift {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  /* Premium Transitions */
+  .transition-premium {
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px -5px rgba(29, 138, 226, 0.15);
-}
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
-/* Glass Effect */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-premium-lg);
+  }
 
-/* Gradient Text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Glass Levels */
+  .glass-1 {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-2 {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-3 {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .glass-1 { background: rgba(15, 23, 42, 0.3); }
+  .dark .glass-2 { background: rgba(15, 23, 42, 0.5); }
+  .dark .glass-3 { background: rgba(15, 23, 42, 0.7); }
+
+  /* Editorial Typography */
+  .text-editorial-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted-foreground);
+  }
+
+  .text-editorial-meta {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--muted-foreground);
+  }
+
+  .first-letter-cap::first-letter {
+    float: left;
+    font-size: 3.5rem;
+    line-height: 0.8;
+    padding-right: 0.5rem;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
 }

@@ -42,6 +42,13 @@ export interface Course {
   startDate: string
   endDate: string
   thumbnail?: string
+  milestones?: {
+    id: string
+    title: string
+    date: string
+    completed: boolean
+    type: 'quiz' | 'exam' | 'project' | 'review'
+  }[]
 }
 
 export interface Assignment {

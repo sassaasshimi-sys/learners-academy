@@ -135,6 +135,11 @@ export const mockCourses: Course[] = [
     duration: '12 weeks',
     startDate: '2024-01-08',
     endDate: '2024-04-05',
+    milestones: [
+      { id: 'm1', title: 'Midterm Assessment', date: '2024-02-15', completed: true, type: 'exam' },
+      { id: 'm2', title: 'Final Project Submission', date: '2024-03-28', completed: false, type: 'project' },
+      { id: 'm3', title: 'Course Review', date: '2024-04-02', completed: false, type: 'review' },
+    ]
   },
   {
     id: 'course-2',
