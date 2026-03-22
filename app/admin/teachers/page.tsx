@@ -48,6 +48,25 @@ import {
 import { mockTeachers } from '@/lib/mock-data'
 import type { Teacher } from '@/lib/types'
 
+const CLASS_LEVELS = [
+  'Pre-Foundation',
+  'Foundation One',
+  'Foundation Two',
+  'Foundation Three',
+  'Beginners',
+  'Level One',
+  'Level Two',
+  'Level Three',
+  'Level Four',
+  'Level Five',
+  'Level Six',
+  'Level Advanced',
+  'Professional Advanced',
+  'Speaking Class',
+  'Grammar Speaking Class',
+  'IELTS Preparation Course'
+]
+
 export default function TeachersPage() {
   const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers)
   const [searchQuery, setSearchQuery] = useState('')
@@ -58,7 +77,8 @@ export default function TeachersPage() {
   const filteredTeachers = teachers.filter(teacher =>
     teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    teacher.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+    teacher.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (teacher.assignedClass && teacher.assignedClass.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   const handleAddTeacher = (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,12 +89,14 @@ export default function TeachersPage() {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      subjects: (formData.get('subjects') as string).split(',').map(s => s.trim()),
-      qualifications: (formData.get('qualifications') as string).split(',').map(q => q.trim()),
+      employeeId: formData.get('employeeId') as string,
+      subjects: [], // Initializing as empty since we removed the field
+      qualifications: [],
       status: 'active',
       joinedAt: new Date().toISOString().split('T')[0],
       coursesCount: 0,
       studentsCount: 0,
+      assignedClass: formData.get('assignedClass') as string,
     }
     setTeachers([...teachers, newTeacher])
     setIsAddDialogOpen(false)
@@ -122,26 +144,35 @@ export default function TeachersPage() {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddTeacher}>
-              <FieldGroup className="py-4">
+              <FieldGroup className="py-4 space-y-4">
                 <Field>
-                  <FieldLabel>Full Name</FieldLabel>
-                  <Input name="name" placeholder="Enter teacher's name" required />
+                  <FieldLabel>Teacher Name</FieldLabel>
+                  <Input name="name" placeholder="Enter full name" required />
                 </Field>
                 <Field>
                   <FieldLabel>Email Address</FieldLabel>
-                  <Input name="email" type="email" placeholder="teacher@example.com" required />
+                  <Input name="email" type="email" placeholder="teacher@learnersacademy.com" required />
                 </Field>
                 <Field>
-                  <FieldLabel>Phone Number</FieldLabel>
-                  <Input name="phone" placeholder="+1 (555) 000-0000" />
+                  <FieldLabel>Employee ID</FieldLabel>
+                  <Input name="employeeId" placeholder="e.g. EMP-101" required />
                 </Field>
                 <Field>
-                  <FieldLabel>Subjects (comma-separated)</FieldLabel>
-                  <Input name="subjects" placeholder="Grammar, Writing, Speaking" required />
+                  <FieldLabel>Phone Number (Pakistan)</FieldLabel>
+                  <Input name="phone" placeholder="+92 300 1234567" required />
                 </Field>
                 <Field>
-                  <FieldLabel>Qualifications (comma-separated)</FieldLabel>
-                  <Input name="qualifications" placeholder="MA English, TEFL Certified" required />
+                  <FieldLabel>Assigned Class</FieldLabel>
+                  <Select name="assignedClass" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLASS_LEVELS.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
               </FieldGroup>
               <DialogFooter>
@@ -203,7 +234,7 @@ export default function TeachersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Teacher</TableHead>
-                  <TableHead>Subjects</TableHead>
+                  <TableHead>ID & Class</TableHead>
                   <TableHead>Classes</TableHead>
                   <TableHead>Students</TableHead>
                   <TableHead>Status</TableHead>
@@ -234,17 +265,9 @@ export default function TeachersPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {teacher.subjects.slice(0, 2).map((subject) => (
-                            <Badge key={subject} variant="secondary" className="text-xs">
-                              {subject}
-                            </Badge>
-                          ))}
-                          {teacher.subjects.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{teacher.subjects.length - 2}
-                            </Badge>
-                          )}
+                        <div className="flex flex-col">
+                          <span className="font-medium">{teacher.employeeId}</span>
+                          <span className="text-xs text-muted-foreground">{teacher.assignedClass || 'Not assigned'}</span>
                         </div>
                       </TableCell>
                       <TableCell>{teacher.coursesCount}</TableCell>
@@ -345,23 +368,11 @@ export default function TeachersPage() {
                   <Phone className="w-4 h-4 text-muted-foreground" />
                   <span>{selectedTeacher.phone}</span>
                 </div>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-medium mb-2">Subjects</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTeacher.subjects.map((subject) => (
-                    <Badge key={subject} variant="secondary">{subject}</Badge>
-                  ))}
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge variant="outline">ID: {selectedTeacher.employeeId}</Badge>
                 </div>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-medium mb-2">Qualifications</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTeacher.qualifications.map((qual) => (
-                    <Badge key={qual} variant="outline">{qual}</Badge>
-                  ))}
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge variant="secondary">Class: {selectedTeacher.assignedClass || 'None'}</Badge>
                 </div>
               </div>
 

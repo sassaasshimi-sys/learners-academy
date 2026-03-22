@@ -5,6 +5,7 @@ export interface Teacher {
   name: string
   email: string
   phone: string
+  employeeId: string
   subjects: string[]
   qualifications: string[]
   status: 'active' | 'inactive'
@@ -12,6 +13,7 @@ export interface Teacher {
   joinedAt: string
   coursesCount: number
   studentsCount: number
+  assignedClass?: string
 }
 
 export interface Student {
