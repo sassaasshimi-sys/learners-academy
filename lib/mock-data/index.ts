@@ -348,11 +348,11 @@ export const mockRevenueData: ChartData[] = [
 ]
 
 export const mockCoursePopularity: ChartData[] = [
-  { name: 'English Fundamentals', value: 22, enrolled: 22 },
+  { name: 'Pre-Foundation', value: 22, enrolled: 22 },
   { name: 'IELTS Prep', value: 20, enrolled: 20 },
-  { name: 'Conversational', value: 18, enrolled: 18 },
-  { name: 'Business English', value: 12, enrolled: 12 },
-  { name: 'Creative Writing', value: 8, enrolled: 8 },
+  { name: 'Beginners', value: 18, enrolled: 18 },
+  { name: 'Level One', value: 12, enrolled: 12 },
+  { name: 'Level Advanced', value: 8, enrolled: 8 },
 ]
 
 // Helper function to get teacher by ID

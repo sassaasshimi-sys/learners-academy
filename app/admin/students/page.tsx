@@ -167,10 +167,10 @@ export default function StudentsPage() {
                   <Input name="phone" placeholder="+1 (555) 000-0000" />
                 </Field>
                 <Field>
-                  <FieldLabel>Enroll in Course</FieldLabel>
+                  <FieldLabel>Enroll in Class</FieldLabel>
                   <Select name="course">
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a course" />
+                      <SelectValue placeholder="Select a class" />
                     </SelectTrigger>
                     <SelectContent>
                       {mockCourses.filter(c => c.status === 'active').map((course) => (
@@ -262,7 +262,7 @@ export default function StudentsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Student</TableHead>
-                  <TableHead>Enrolled Courses</TableHead>
+                  <TableHead>Enrolled Classes</TableHead>
                   <TableHead>Progress</TableHead>
                   <TableHead>Grade</TableHead>
                   <TableHead>Status</TableHead>
@@ -294,7 +294,7 @@ export default function StudentsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {student.enrolledCourses.length} course{student.enrolledCourses.length !== 1 ? 's' : ''}
+                          {student.enrolledCourses.length} class{student.enrolledCourses.length !== 1 ? 'es' : ''}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -420,7 +420,7 @@ export default function StudentsPage() {
                     <BookOpen className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-2xl font-bold">{selectedStudent.enrolledCourses.length}</p>
-                  <p className="text-sm text-muted-foreground">Courses</p>
+                  <p className="text-sm text-muted-foreground">Classes</p>
                 </div>
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-2">

@@ -40,7 +40,7 @@ import {
 import { mockAssignments, mockCourses } from '@/lib/mock-data'
 import type { Assignment } from '@/lib/types'
 
-const myCourses = mockCourses.filter(c => c.teacherId === 'teacher-1')
+const myClasses = mockCourses.filter(c => c.teacherId === 'teacher-1')
 const myAssignments = mockAssignments.filter(a => a.teacherId === 'teacher-1')
 
 export default function TeacherAssignmentsPage() {
@@ -59,7 +59,7 @@ export default function TeacherAssignmentsPage() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const courseId = formData.get('course') as string
-    const course = myCourses.find(c => c.id === courseId)
+    const course = myClasses.find(c => c.id === courseId)
     
     const newAssignment: Assignment = {
       id: `assignment-${Date.now()}`,
@@ -132,7 +132,7 @@ export default function TeacherAssignmentsPage() {
                       <SelectValue placeholder="Select a class" />
                     </SelectTrigger>
                     <SelectContent>
-                      {myCourses.map((course) => (
+                      {myClasses.map((course) => (
                         <SelectItem key={course.id} value={course.id}>
                           {course.title}
                         </SelectItem>

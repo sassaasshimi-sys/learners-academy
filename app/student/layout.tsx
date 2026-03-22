@@ -21,7 +21,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 const studentNavItems = [
   {
-    title: "My Courses",
+    title: "My Classes",
     href: "/student",
     icon: BookOpen,
   },

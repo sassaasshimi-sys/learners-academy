@@ -204,7 +204,7 @@ export default function TeachersPage() {
                 <TableRow>
                   <TableHead>Teacher</TableHead>
                   <TableHead>Subjects</TableHead>
-                  <TableHead>Courses</TableHead>
+                  <TableHead>Classes</TableHead>
                   <TableHead>Students</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="w-[70px]"></TableHead>
@@ -368,7 +368,7 @@ export default function TeachersPage() {
               <div className="grid gap-4 grid-cols-3 pt-4 border-t">
                 <div className="text-center">
                   <p className="text-2xl font-bold">{selectedTeacher.coursesCount}</p>
-                  <p className="text-sm text-muted-foreground">Courses</p>
+                  <p className="text-sm text-muted-foreground">Classes</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold">{selectedTeacher.studentsCount}</p>

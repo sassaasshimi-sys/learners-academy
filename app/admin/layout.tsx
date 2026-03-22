@@ -60,8 +60,8 @@ const adminNavItems = [
     icon: GraduationCap,
   },
   {
-    title: 'Courses',
-    href: '/admin/courses',
+    title: 'Classes',
+    href: '/admin/classes',
     icon: BookOpen,
   },
   {

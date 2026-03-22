@@ -106,7 +106,7 @@ export default function TeacherDashboard() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>My Classes</CardTitle>
-              <CardDescription>Your current teaching assignments</CardDescription>
+              <CardDescription>Your current teaching schedule</CardDescription>
             </div>
             <Button variant="outline" size="sm" asChild>
               <Link href="/teacher/classes">

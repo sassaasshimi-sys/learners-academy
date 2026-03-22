@@ -51,7 +51,7 @@ export default function TeacherClassesPage() {
           My Classes
         </h1>
         <p className="text-muted-foreground mt-1">
-          Manage your assigned courses and view enrolled students
+          Manage your assigned classes and view enrolled students
         </p>
       </div>
 

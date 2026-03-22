@@ -50,7 +50,32 @@ import {
 import { mockCourses, mockTeachers } from '@/lib/mock-data'
 import type { Course } from '@/lib/types'
 
-export default function CoursesPage() {
+const CLASS_LEVELS = [
+  'Pre-Foundation',
+  'Foundation One',
+  'Foundation Two',
+  'Foundation Three',
+  'Beginners',
+  'Level One',
+  'Level Two',
+  'Level Three',
+  'Level Four',
+  'Level Five',
+  'Level Six',
+  'Level Advanced',
+  'Professional Advanced',
+  'Speaking Class',
+  'Grammar Speaking Class',
+  'IELTS Preparation Course'
+]
+
+const CLASS_TIMES = [
+  '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+  '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM',
+  '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
+]
+
+export default function ClassesPage() {
   const [courses, setCourses] = useState<Course[]>(mockCourses)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -69,27 +94,26 @@ export default function CoursesPage() {
   const handleAddCourse = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const teacherId = formData.get('teacher') as string
-    const teacher = mockTeachers.find(t => t.id === teacherId)
     
     const newCourse: Course = {
-      id: `course-${Date.now()}`,
+      id: `class-${Date.now()}`,
       title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      level: formData.get('level') as Course['level'],
-      teacherId: teacherId,
-      teacherName: teacher?.name || 'TBD',
-      capacity: parseInt(formData.get('capacity') as string) || 20,
+      description: 'Institutional English Class',
+      level: 'beginner', // Default level since we now use title for detailed level
+      teacherId: 'manual',
+      teacherName: formData.get('teacherName') as string,
+      capacity: 20,
       enrolled: 0,
-      status: 'draft',
+      status: 'active',
       schedule: formData.get('schedule') as string,
-      duration: formData.get('duration') as string,
-      startDate: formData.get('startDate') as string,
-      endDate: formData.get('endDate') as string,
+      duration: 'Term-based',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      roomNumber: formData.get('roomNumber') as string,
     }
     setCourses([...courses, newCourse])
     setIsAddDialogOpen(false)
-    toast.success('Course created successfully')
+    toast.success('Class created successfully')
   }
 
   const handleStatusChange = (course: Course, newStatus: Course['status']) => {
@@ -134,99 +158,71 @@ export default function CoursesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-serif text-3xl font-semibold text-foreground">
-            Courses
+            Classes
           </h1>
           <p className="text-muted-foreground mt-1">
-            Create and manage your English language courses
+            Create and manage your English language classes
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Create Course
+              Create Class
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Create New Course</DialogTitle>
+              <DialogTitle>Create New Class</DialogTitle>
               <DialogDescription>
-                Fill in the details to create a new course.
+                Fill in the details to schedule a new class.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddCourse}>
-              <FieldGroup className="py-4">
+              <FieldGroup className="py-4 space-y-4">
                 <Field>
-                  <FieldLabel>Course Title</FieldLabel>
-                  <Input name="title" placeholder="e.g., Advanced Grammar Mastery" required />
-                </Field>
-                <Field>
-                  <FieldLabel>Description</FieldLabel>
-                  <Textarea 
-                    name="description" 
-                    placeholder="Describe what students will learn..."
-                    rows={3}
-                    required 
-                  />
-                </Field>
-                <div className="grid gap-4 grid-cols-2">
-                  <Field>
-                    <FieldLabel>Level</FieldLabel>
-                    <Select name="level" defaultValue="beginner">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field>
-                    <FieldLabel>Capacity</FieldLabel>
-                    <Input name="capacity" type="number" placeholder="20" defaultValue={20} />
-                  </Field>
-                </div>
-                <Field>
-                  <FieldLabel>Assign Teacher</FieldLabel>
-                  <Select name="teacher">
+                  <FieldLabel>Class Name</FieldLabel>
+                  <Select name="title" required>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a teacher" />
+                      <SelectValue placeholder="Select class level/type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {mockTeachers.filter(t => t.status === 'active').map((teacher) => (
-                        <SelectItem key={teacher.id} value={teacher.id}>
-                          {teacher.name}
-                        </SelectItem>
+                      {CLASS_LEVELS.map(level => (
+                        <SelectItem key={level} value={level}>{level}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </Field>
+                
                 <Field>
-                  <FieldLabel>Schedule</FieldLabel>
-                  <Input name="schedule" placeholder="e.g., Mon, Wed, Fri - 9:00 AM" required />
+                  <FieldLabel>Class Timing</FieldLabel>
+                  <Select name="schedule" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select starting time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLASS_TIMES.map(time => (
+                        <SelectItem key={time} value={time}>{time}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
-                <div className="grid gap-4 grid-cols-2">
-                  <Field>
-                    <FieldLabel>Duration</FieldLabel>
-                    <Input name="duration" placeholder="e.g., 8 weeks" required />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Start Date</FieldLabel>
-                    <Input name="startDate" type="date" required />
-                  </Field>
-                </div>
+
                 <Field>
-                  <FieldLabel>End Date</FieldLabel>
-                  <Input name="endDate" type="date" required />
+                  <FieldLabel>Teacher Name</FieldLabel>
+                  <Input name="teacherName" placeholder="Enter teacher name" required />
+                </Field>
+
+                <Field>
+                  <FieldLabel>Room Number</FieldLabel>
+                  <Input name="roomNumber" placeholder="e.g. Room 302" required />
                 </Field>
               </FieldGroup>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Create Course</Button>
+                <Button type="submit">Create Class</Button>
               </DialogFooter>
             </form>
           </DialogContent>

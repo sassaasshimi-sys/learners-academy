@@ -12,7 +12,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { STAGGER_CONTAINER, STAGGER_ITEM } from "@/lib/premium-motion"
 
-export default function StudentCoursesPage() {
+export default function StudentClassesPage() {
   const { user } = useAuth()
 
   // Get student's enrolled courses (using mock data - current student is the first one)
@@ -66,7 +66,7 @@ export default function StudentCoursesPage() {
         <div className="mt-4 flex flex-wrap gap-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <BookOpen className="h-4 w-4 text-primary" />
-            <span className="text-editorial-label text-[10px]">{enrolledCourses.length} Active Courses</span>
+            <span className="text-editorial-label text-[10px]">{enrolledCourses.length} Active Classes</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 text-primary" />
@@ -93,7 +93,7 @@ export default function StudentCoursesPage() {
                 </div>
                 <Button className="mt-4 gap-2">
                   <Play className="h-4 w-4" />
-                  Continue Course
+                  Continue Class
                 </Button>
               </div>
               <div className="hidden w-64 bg-gradient-to-br from-primary/20 to-primary/5 sm:block" />
@@ -105,7 +105,7 @@ export default function StudentCoursesPage() {
       {/* My Courses */}
       <motion.div variants={STAGGER_ITEM}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-semibold">My Courses</h2>
+          <h2 className="font-serif text-xl font-semibold">My Classes</h2>
           <Button variant="ghost" className="gap-1 text-primary">
             View All
             <ChevronRight className="h-4 w-4" />
@@ -174,7 +174,7 @@ export default function StudentCoursesPage() {
       {/* Available Courses */}
       <motion.div variants={STAGGER_ITEM}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl font-semibold">Explore More Courses</h2>
+          <h2 className="font-serif text-xl font-semibold">Explore More Classes</h2>
           <Button variant="ghost" className="gap-1 text-primary">
             Browse All
             <ChevronRight className="h-4 w-4" />

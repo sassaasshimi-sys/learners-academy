@@ -54,12 +54,12 @@ const statCards = [
     href: '/admin/teachers',
   },
   {
-    title: 'Total Courses',
+    title: 'Total Classes',
     value: mockDashboardStats.totalCourses,
     icon: BookOpen,
     change: '+3',
     changeType: 'positive' as const,
-    href: '/admin/courses',
+    href: '/admin/classes',
   },
   {
     title: 'Revenue',
@@ -167,10 +167,10 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="w-5 h-5 text-accent" />
-              Course Popularity
+              Class Popularity
             </CardTitle>
             <CardDescription>
-              Most enrolled courses this semester
+              Most enrolled classes this semester
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -274,9 +274,9 @@ export default function AdminDashboard() {
               </Link>
             </Button>
             <Button className="w-full justify-start" variant="outline" asChild>
-              <Link href="/admin/courses?action=add">
+              <Link href="/admin/classes?action=add">
                 <BookOpen className="w-4 h-4 mr-2" />
-                Create Course
+                Create Class
               </Link>
             </Button>
             <Button className="w-full justify-start" variant="outline" asChild>
@@ -289,16 +289,16 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Active Courses */}
+      {/* Active Classes */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Active Courses</CardTitle>
-            <CardDescription>Currently running courses</CardDescription>
+            <CardTitle>Active Classes</CardTitle>
+            <CardDescription>Currently running classes</CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/admin/courses">
-              Manage Courses
+            <Link href="/admin/classes">
+              Manage Classes
               <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </Button>
