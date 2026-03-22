@@ -16,7 +16,7 @@ import type { UserRole } from '@/lib/types/auth'
 const portalOptions = [
   {
     role: 'admin' as UserRole,
-    title: 'Administrator',
+    title: 'Admin',
     description: 'Manage teachers, students, courses, and institute settings',
     icon: ShieldCheck,
     gradient: 'from-primary to-primary/80',
