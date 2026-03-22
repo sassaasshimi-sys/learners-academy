@@ -1,0 +1,390 @@
+'use client'
+
+import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { toast } from 'sonner'
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Mail,
+  Phone,
+  Edit,
+  Trash2,
+  Eye,
+  UserCheck,
+  UserX,
+} from 'lucide-react'
+import { mockTeachers } from '@/lib/mock-data'
+import type { Teacher } from '@/lib/types'
+
+export default function TeachersPage() {
+  const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null)
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
+
+  const filteredTeachers = teachers.filter(teacher =>
+    teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    teacher.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
+  const handleAddTeacher = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const newTeacher: Teacher = {
+      id: `teacher-${Date.now()}`,
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      subjects: (formData.get('subjects') as string).split(',').map(s => s.trim()),
+      qualifications: (formData.get('qualifications') as string).split(',').map(q => q.trim()),
+      status: 'active',
+      joinedAt: new Date().toISOString().split('T')[0],
+      coursesCount: 0,
+      studentsCount: 0,
+    }
+    setTeachers([...teachers, newTeacher])
+    setIsAddDialogOpen(false)
+    toast.success('Teacher added successfully')
+  }
+
+  const handleToggleStatus = (teacher: Teacher) => {
+    setTeachers(teachers.map(t => 
+      t.id === teacher.id 
+        ? { ...t, status: t.status === 'active' ? 'inactive' : 'active' }
+        : t
+    ))
+    toast.success(`Teacher ${teacher.status === 'active' ? 'deactivated' : 'activated'}`)
+  }
+
+  const handleDelete = (teacher: Teacher) => {
+    setTeachers(teachers.filter(t => t.id !== teacher.id))
+    toast.success('Teacher removed successfully')
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="font-serif text-3xl font-semibold text-foreground">
+            Teachers
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your teaching staff and their assignments
+          </p>
+        </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Teacher
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add New Teacher</DialogTitle>
+              <DialogDescription>
+                Fill in the details to add a new teacher to the academy.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddTeacher}>
+              <FieldGroup className="py-4">
+                <Field>
+                  <FieldLabel>Full Name</FieldLabel>
+                  <Input name="name" placeholder="Enter teacher's name" required />
+                </Field>
+                <Field>
+                  <FieldLabel>Email Address</FieldLabel>
+                  <Input name="email" type="email" placeholder="teacher@example.com" required />
+                </Field>
+                <Field>
+                  <FieldLabel>Phone Number</FieldLabel>
+                  <Input name="phone" placeholder="+1 (555) 000-0000" />
+                </Field>
+                <Field>
+                  <FieldLabel>Subjects (comma-separated)</FieldLabel>
+                  <Input name="subjects" placeholder="Grammar, Writing, Speaking" required />
+                </Field>
+                <Field>
+                  <FieldLabel>Qualifications (comma-separated)</FieldLabel>
+                  <Input name="qualifications" placeholder="MA English, TEFL Certified" required />
+                </Field>
+              </FieldGroup>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Teacher</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Teachers</CardDescription>
+            <CardTitle className="text-3xl">{teachers.length}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Active Teachers</CardDescription>
+            <CardTitle className="text-3xl text-success">
+              {teachers.filter(t => t.status === 'active').length}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Inactive Teachers</CardDescription>
+            <CardTitle className="text-3xl text-muted-foreground">
+              {teachers.filter(t => t.status === 'inactive').length}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      {/* Teachers Table */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <CardTitle>All Teachers</CardTitle>
+            <div className="relative w-full md:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search teachers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Teacher</TableHead>
+                  <TableHead>Subjects</TableHead>
+                  <TableHead>Courses</TableHead>
+                  <TableHead>Students</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[70px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTeachers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      No teachers found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredTeachers.map((teacher) => (
+                    <TableRow key={teacher.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {teacher.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{teacher.name}</p>
+                            <p className="text-sm text-muted-foreground">{teacher.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {teacher.subjects.slice(0, 2).map((subject) => (
+                            <Badge key={subject} variant="secondary" className="text-xs">
+                              {subject}
+                            </Badge>
+                          ))}
+                          {teacher.subjects.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{teacher.subjects.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{teacher.coursesCount}</TableCell>
+                      <TableCell>{teacher.studentsCount}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={teacher.status === 'active' ? 'default' : 'secondary'}
+                          className={teacher.status === 'active' ? 'bg-success hover:bg-success/90' : ''}
+                        >
+                          {teacher.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => {
+                              setSelectedTeacher(teacher)
+                              setIsViewDialogOpen(true)
+                            }}>
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleToggleStatus(teacher)}>
+                              {teacher.status === 'active' ? (
+                                <>
+                                  <UserX className="w-4 h-4 mr-2" />
+                                  Deactivate
+                                </>
+                              ) : (
+                                <>
+                                  <UserCheck className="w-4 h-4 mr-2" />
+                                  Activate
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDelete(teacher)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Remove
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* View Teacher Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Teacher Details</DialogTitle>
+          </DialogHeader>
+          {selectedTeacher && (
+            <div className="space-y-6 py-4">
+              <div className="flex items-center gap-4">
+                <Avatar className="w-16 h-16">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xl">
+                    {selectedTeacher.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-lg font-semibold">{selectedTeacher.name}</h3>
+                  <Badge 
+                    variant={selectedTeacher.status === 'active' ? 'default' : 'secondary'}
+                    className={selectedTeacher.status === 'active' ? 'bg-success hover:bg-success/90' : ''}
+                  >
+                    {selectedTeacher.status}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  <span>{selectedTeacher.email}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone className="w-4 h-4 text-muted-foreground" />
+                  <span>{selectedTeacher.phone}</span>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium mb-2">Subjects</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTeacher.subjects.map((subject) => (
+                    <Badge key={subject} variant="secondary">{subject}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium mb-2">Qualifications</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTeacher.qualifications.map((qual) => (
+                    <Badge key={qual} variant="outline">{qual}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 grid-cols-3 pt-4 border-t">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{selectedTeacher.coursesCount}</p>
+                  <p className="text-sm text-muted-foreground">Courses</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{selectedTeacher.studentsCount}</p>
+                  <p className="text-sm text-muted-foreground">Students</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">
+                    {new Date(selectedTeacher.joinedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Joined</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

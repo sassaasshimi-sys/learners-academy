@@ -1,0 +1,89 @@
+export * from './auth'
+
+export interface Teacher {
+  id: string
+  name: string
+  email: string
+  phone: string
+  subjects: string[]
+  qualifications: string[]
+  status: 'active' | 'inactive'
+  avatar?: string
+  joinedAt: string
+  coursesCount: number
+  studentsCount: number
+}
+
+export interface Student {
+  id: string
+  name: string
+  email: string
+  phone: string
+  enrolledCourses: string[]
+  status: 'active' | 'inactive' | 'graduated'
+  avatar?: string
+  enrolledAt: string
+  progress: number
+  grade?: string
+}
+
+export interface Course {
+  id: string
+  title: string
+  description: string
+  level: 'beginner' | 'intermediate' | 'advanced'
+  teacherId: string
+  teacherName: string
+  capacity: number
+  enrolled: number
+  status: 'active' | 'draft' | 'completed' | 'archived'
+  schedule: string
+  duration: string
+  startDate: string
+  endDate: string
+  thumbnail?: string
+}
+
+export interface Assignment {
+  id: string
+  title: string
+  description: string
+  courseId: string
+  courseName: string
+  teacherId: string
+  dueDate: string
+  status: 'active' | 'closed' | 'draft'
+  submissionsCount: number
+  totalStudents: number
+  createdAt: string
+}
+
+export interface Submission {
+  id: string
+  assignmentId: string
+  assignmentTitle: string
+  studentId: string
+  studentName: string
+  submittedAt: string
+  status: 'pending' | 'graded' | 'late'
+  grade?: number
+  feedback?: string
+  fileUrl?: string
+}
+
+export interface DashboardStats {
+  totalStudents: number
+  totalTeachers: number
+  totalCourses: number
+  activeEnrollments: number
+  revenue: number
+  revenueChange: number
+  newEnrollments: number
+  completionRate: number
+}
+
+export interface ChartData {
+  name: string
+  value: number
+  [key: string]: string | number
+}
