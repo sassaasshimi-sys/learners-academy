@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   Plus,
@@ -204,51 +205,59 @@ export default function AssessmentsPage() {
             </div>
           ) : (
             filteredAssessments.map((assessment) => (
-              <Card key={assessment.id} className="hover-lift overflow-hidden border-none shadow-sm ring-1 ring-border">
-                <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
-                  <div className="space-y-1">
-                    <Badge variant={assessment.phase === 'First Test' ? 'outline' : 'secondary'}>
-                      {assessment.phase}
-                    </Badge>
-                    <CardTitle className="text-lg leading-tight">{assessment.title}</CardTitle>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => handleDelete(assessment.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Users className="w-4 h-4" />
-                      <span>{assessment.classLevels[0]}</span>
+              <motion.div
+                key={assessment.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileTap={{ scale: 0.98 }}
+                layout
+              >
+                <Card className="hover-lift overflow-hidden border-none shadow-sm ring-1 ring-border h-full">
+                  <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
+                    <div className="space-y-1">
+                      <Badge variant={assessment.phase === 'First Test' ? 'outline' : 'secondary'} className="text-[10px] uppercase tracking-widest font-bold border-primary/20 bg-primary/5 text-primary">
+                        {assessment.phase}
+                      </Badge>
+                      <CardTitle className="font-serif text-xl tracking-tight leading-none pt-1">{assessment.title}</CardTitle>
                     </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <FileText className="w-4 h-4" />
-                      <span>{assessment.nature}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      <span>{assessment.durationMinutes} mins</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Calendar className="w-4 h-4" />
-                      <span>{new Date(assessment.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-2">
-                    <Button variant="outline" className="w-full group">
-                      Review Paper
-                      <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-9 w-9 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-xl transition-premium"
+                      onClick={() => handleDelete(assessment.id)}
+                    >
+                      <Trash2 className="w-4.5 h-4.5" />
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-[11px] uppercase tracking-wider font-bold text-muted-foreground/80">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-3.5 h-3.5 text-primary/60" />
+                        <span className="truncate">{assessment.classLevels[0]}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-3.5 h-3.5 text-primary/60" />
+                        <span>{assessment.nature}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-primary/60" />
+                        <span>{assessment.durationMinutes} min</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5 text-primary/60" />
+                        <span>{new Date(assessment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <Button variant="outline" className="w-full group rounded-xl h-10 border-primary/10 hover:bg-primary/5 hover:text-primary transition-premium font-semibold">
+                        Review Exam Paper
+                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))
           )}
         </div>

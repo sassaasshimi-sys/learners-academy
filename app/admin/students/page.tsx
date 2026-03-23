@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -265,7 +266,8 @@ export default function StudentsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border">
+          {/* Desktop Table View */}
+          <div className="hidden md:block rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -374,6 +376,116 @@ export default function StudentsPage() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="grid gap-4 md:hidden">
+            {filteredStudents.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground bg-muted/10 rounded-2xl border border-dashed">
+                No students found matching your criteria.
+              </div>
+            ) : (
+              filteredStudents.map((student) => (
+                <motion.div
+                  key={student.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-card border rounded-2xl p-4 shadow-sm hover:shadow-md transition-premium"
+                  onClick={() => {
+                    setSelectedStudent(student)
+                    setIsViewDialogOpen(true)
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10 ring-2 ring-primary/5">
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                          {student.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h4 className="font-serif font-bold text-base leading-none mb-1">{student.name}</h4>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-60">
+                          {student.studentId || 'ID-TBC'}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge 
+                      variant={student.status === 'inactive' ? 'secondary' : 'default'}
+                      className={cn("text-[8px] px-1.5 py-0 uppercase tracking-tighter", getStatusColor(student.status))}
+                    >
+                      {student.status}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground font-medium uppercase tracking-tighter text-[9px]">Enrolled In</p>
+                      <p className="font-semibold">{student.enrolledCourses.length} Classes</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground font-medium uppercase tracking-tighter text-[9px]">Last Grade</p>
+                      <p className={cn("font-bold text-sm", getGradeColor(student.grade))}>{student.grade || 'N/A'}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-muted-foreground font-medium">Term Progress</span>
+                      <span className="font-bold">{student.progress}%</span>
+                    </div>
+                    <Progress value={student.progress} className="h-1.5" />
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t flex items-center justify-between gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex-1 h-9 rounded-xl text-xs font-semibold"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedStudent(student)
+                        setIsViewDialogOpen(true)
+                      }}
+                    >
+                      <Eye className="w-3.5 h-3.5 mr-1.5" />
+                      View Profile
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="sm" className="h-9 w-9 rounded-xl">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 rounded-2xl p-1 shadow-premium">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation()
+                          handleToggleStatus(student)
+                        }} className="rounded-xl">
+                          {student.status === 'active' ? (
+                            <><UserX className="w-4 h-4 mr-2" /> Deactivate</>
+                          ) : (
+                            <><UserCheck className="w-4 h-4 mr-2" /> Activate</>
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="text-destructive focus:text-destructive rounded-xl"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDelete(student)
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove Student
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

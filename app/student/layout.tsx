@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { Lock, ClipboardList, LogOut, User, Bell } from "lucide-react"
+import { motion } from "framer-motion"
 
 const assessmentNavItems = [
   {
@@ -172,22 +173,21 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Mobile Navigation */}
-        <nav className="flex items-center justify-around border-t py-2 md:hidden">
+        <nav className="flex items-center justify-around border-t py-2 md:hidden bg-card/80 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
           {assessmentNavItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link key={item.href} href={item.href}>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
                   className={cn(
-                    "flex-col gap-1 h-auto py-2",
-                    isActive && "text-primary"
+                    "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-premium",
+                    isActive ? "text-primary bg-primary/5" : "text-muted-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
-                  <span className="text-xs">{item.title}</span>
-                </Button>
+                  <item.icon className={cn("h-5 w-5", isActive && "stroke-[2.5px]")} />
+                  <span className="text-[10px] font-bold uppercase tracking-tight">{item.title}</span>
+                </motion.div>
               </Link>
             )
           })}
