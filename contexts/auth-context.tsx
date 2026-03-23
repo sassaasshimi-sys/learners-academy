@@ -70,6 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             pathname.startsWith('/student')
 
     if (!state.isAuthenticated && isProtectedRoute) {
+      // Allow access to the student entry page without authentication
+      if (pathname === '/student') return
+      
       router.push('/auth/login')
       return
     }
