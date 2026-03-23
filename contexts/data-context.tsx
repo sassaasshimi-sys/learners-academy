@@ -110,6 +110,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, [data, isInitialized])
 
+  // Helper to generate a unique access code for assessments
+  const generateAccessCode = () => {
+    return Math.random().toString(36).substring(2, 8).toUpperCase()
+  }
+
   // Actions
   const enrollStudent = useCallback((student: Student) => {
     setData(prev => ({
@@ -141,9 +146,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const publishAssessment = useCallback((assessment: AssessmentTemplate) => {
+    const assessmentWithCode = {
+      ...assessment,
+      accessCode: assessment.accessCode || generateAccessCode()
+    }
     setData(prev => ({
       ...prev,
-      assessments: [assessment, ...prev.assessments]
+      assessments: [assessmentWithCode, ...prev.assessments]
     }))
   }, [])
 

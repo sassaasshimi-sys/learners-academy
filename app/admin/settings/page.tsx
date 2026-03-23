@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { SecureInput } from '@/components/ui/secure-input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
@@ -248,18 +249,18 @@ export default function SettingsPage() {
               <FieldGroup>
                 <Field>
                   <FieldLabel>Current Password</FieldLabel>
-                  <Input type="password" />
+                  <SecureInput placeholder="••••••••" />
                 </Field>
                 <Field>
                   <FieldLabel>New Password</FieldLabel>
-                  <Input type="password" />
+                  <SecureInput placeholder="••••••••" />
                   <FieldDescription>
                     Must be at least 8 characters with a mix of letters, numbers, and symbols
                   </FieldDescription>
                 </Field>
                 <Field>
                   <FieldLabel>Confirm New Password</FieldLabel>
-                  <Input type="password" />
+                  <SecureInput placeholder="••••••••" />
                 </Field>
               </FieldGroup>
             </CardContent>

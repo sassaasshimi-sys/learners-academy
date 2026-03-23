@@ -14,6 +14,7 @@ export interface Teacher {
   coursesCount: number
   studentsCount: number
   assignedClass?: string
+  employeePassword?: string
 }
 
 export interface Student {
@@ -132,6 +133,7 @@ export interface AssessmentTemplate {
   durationMinutes: number
   createdAt: string
   status: 'active' | 'draft' | 'archived'
+  accessCode: string
 }
 
 export interface StudentTest {

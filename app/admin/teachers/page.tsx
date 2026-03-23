@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { SecureInput } from '@/components/ui/secure-input'
 import {
   Table,
   TableBody,
@@ -155,18 +156,24 @@ export default function TeachersPage() {
                   <FieldLabel className="text-editorial-label">Teacher Full Name</FieldLabel>
                   <Input name="name" placeholder="Enter teacher's full name" required className="bg-background/50" />
                 </Field>
-                <Field>
-                  <FieldLabel className="text-editorial-label">Academic Email</FieldLabel>
-                  <Input name="email" type="email" placeholder="teacher@learnersacademy.com" required className="bg-background/50" />
-                </Field>
                 <div className="grid grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel className="text-editorial-label">Employee ID</FieldLabel>
                     <Input name="employeeId" placeholder="e.g. EMP-101" required className="bg-background/50" />
                   </Field>
                   <Field>
+                    <FieldLabel className="text-editorial-label">Portal Password</FieldLabel>
+                    <SecureInput name="password" placeholder="••••••••" required className="bg-background/50" />
+                  </Field>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
                     <FieldLabel className="text-editorial-label">Phone Number</FieldLabel>
                     <Input name="phone" placeholder="+92 300 1234567" required className="bg-background/50" />
+                  </Field>
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Academic Email</FieldLabel>
+                    <Input name="email" type="email" placeholder="teacher@academy.com" required className="bg-background/50 text-xs" />
                   </Field>
                 </div>
               </FieldGroup>

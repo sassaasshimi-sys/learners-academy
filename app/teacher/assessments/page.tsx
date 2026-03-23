@@ -36,6 +36,9 @@ import {
   FileText,
   Clock,
   ArrowRight,
+  TrendingUp,
+  Copy,
+  CheckCircle2
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useData } from '@/contexts/data-context'
@@ -247,6 +250,28 @@ export default function AssessmentsPage() {
                         <Calendar className="w-3.5 h-3.5 text-primary/60" />
                         <span>{new Date(assessment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                       </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border border-primary/5 group/token relative overflow-hidden">
+                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/token:opacity-100 transition-opacity" />
+                      <div className="relative z-10 flex flex-col">
+                        <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground">Access Token</span>
+                        <span className="font-mono text-sm font-bold tracking-tighter text-primary">{assessment.accessCode}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-xl relative z-10 hover:bg-primary/10 hover:text-primary transition-premium"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigator.clipboard.writeText(assessment.accessCode)
+                          toast.success("Access Token Copied", {
+                            description: "The code is ready to share with your students."
+                          })
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
                     </div>
                     
                     <div className="pt-2">

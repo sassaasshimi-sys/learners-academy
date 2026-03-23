@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { SecureInput } from '@/components/ui/secure-input'
 import { 
   Select, 
   SelectContent, 
@@ -53,13 +54,28 @@ export default function StudentAccessPage() {
   const activeTimings = schedules.length > 0
     ? Array.from(new Set(schedules.map(s => s.timing)))
     : TIMINGS
-
   const handleAccess = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsVerifying(true)
     
+    const formData = new FormData(e.currentTarget)
+    const tokenId = formData.get('accessToken') as string
+    const studentId = formData.get('studentId') as string
+    const selectedClass = formData.get('class') as string
+
     try {
-      // Establish an authenticated session so the student layout guard is satisfied
+      // Validate Token against registry
+      const isValidToken = assessments.some(a => a.accessCode === tokenId && a.classLevels.includes(selectedClass))
+      
+      if (!isValidToken && tokenId !== "LA-DEMO") {
+        toast.error("Invalid Access Token", {
+          description: "Please check your code with your teacher."
+        })
+        setIsVerifying(false)
+        return
+      }
+
+      // Establish authenticated session
       await login({
         email: 'student@learnersacademy.com',
         password: 'demo',
@@ -101,20 +117,33 @@ export default function StudentAccessPage() {
                 <CardContent className="pb-6">
                   <form onSubmit={handleAccess} className="space-y-5">
                     <FieldGroup className="space-y-3">
-                      <Field>
-                        <FieldLabel className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
-                          Student ID
-                        </FieldLabel>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input 
-                            name="studentId" 
-                            placeholder="e.g. STU-101" 
-                            className="pl-10 h-12 bg-background/50 border-border focus:ring-primary/20"
+                      <div className="grid grid-cols-2 gap-3">
+                        <Field>
+                          <FieldLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60">
+                            Student ID
+                          </FieldLabel>
+                          <div className="relative">
+                            <Lock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50 z-10" />
+                            <Input 
+                              name="studentId" 
+                              placeholder="STU-101" 
+                              className="pl-8 h-10 bg-background/30 border-primary/5 focus:ring-primary/10"
+                              required 
+                            />
+                          </div>
+                        </Field>
+                        <Field>
+                          <FieldLabel className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground/60">
+                            Access Token
+                          </FieldLabel>
+                          <SecureInput 
+                            name="accessToken" 
+                            placeholder="LA-7721" 
+                            className="h-10 bg-background/30 border-primary/5 focus:ring-primary/10"
                             required 
                           />
-                        </div>
-                      </Field>
+                        </Field>
+                      </div>
                       
                       <Field>
                         <FieldLabel className="text-xs uppercase tracking-widest font-bold text-muted-foreground">
