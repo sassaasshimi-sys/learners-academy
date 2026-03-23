@@ -17,7 +17,7 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Lock, GraduationCap, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { mockSchedules } from '@/lib/mock-data'
+import { useData } from '@/contexts/data-context'
 
 const CLASSES = [
   'Pre-Foundation', 'Foundation One', 'Foundation Two', 'Foundation Three',
@@ -42,8 +42,17 @@ const TIMINGS = [
 export default function StudentAccessPage() {
   const router = useRouter()
   const { login } = useAuth()
+  const { courses, schedules } = useData()
   const [isVerifying, setIsVerifying] = useState(false)
   const [step, setStep] = useState(1)
+
+  const activeClasses = courses.length > 0 
+    ? Array.from(new Set(courses.map(c => c.title)))
+    : CLASSES
+    
+  const activeTimings = schedules.length > 0
+    ? Array.from(new Set(schedules.map(s => s.timing)))
+    : TIMINGS
 
   const handleAccess = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -116,7 +125,7 @@ export default function StudentAccessPage() {
                             <SelectValue placeholder="Select your class" />
                           </SelectTrigger>
                           <SelectContent>
-                            {CLASSES.map(cls => (
+                            {activeClasses.map(cls => (
                               <SelectItem key={cls} value={cls}>{cls}</SelectItem>
                             ))}
                           </SelectContent>
@@ -132,7 +141,7 @@ export default function StudentAccessPage() {
                             <SelectValue placeholder="Select timings" />
                           </SelectTrigger>
                           <SelectContent>
-                            {TIMINGS.map(time => (
+                            {activeTimings.map(time => (
                               <SelectItem key={time} value={time}>{time}</SelectItem>
                             ))}
                           </SelectContent>

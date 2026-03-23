@@ -3,6 +3,7 @@ import { Inter, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/auth-context'
+import { DataProvider } from '@/contexts/data-context'
 import './globals.css'
 
 const inter = Inter({ 
@@ -47,9 +48,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
       <body className="font-sans antialiased">
         <AuthProvider>
-          <div id="root-content">
-            {children}
-          </div>
+          <DataProvider>
+            <div id="root-content">
+              {children}
+            </div>
+          </DataProvider>
         </AuthProvider>
         <Toaster position="top-right" richColors />
         <Analytics />

@@ -29,51 +29,51 @@ import {
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useData } from '@/contexts/data-context'
 import {
-  mockDashboardStats,
   mockEnrollmentTrend,
   mockRevenueData,
   mockCoursePopularity,
-  mockStudents,
-  mockCourses,
 } from '@/lib/mock-data'
 
-const statCards = [
-  {
-    title: 'Total Students',
-    value: mockDashboardStats.totalStudents,
-    icon: GraduationCap,
-    change: '+12%',
-    changeType: 'positive' as const,
-    href: '/admin/students',
-  },
-  {
-    title: 'Active Teachers',
-    value: mockDashboardStats.totalTeachers,
-    icon: Users,
-    change: '+2',
-    changeType: 'positive' as const,
-    href: '/admin/teachers',
-  },
-  {
-    title: 'Total Classes',
-    value: mockDashboardStats.totalCourses,
-    icon: BookOpen,
-    change: '+3',
-    changeType: 'positive' as const,
-    href: '/admin/classes',
-  },
-  {
-    title: 'Revenue',
-    value: `$${mockDashboardStats.revenue.toLocaleString()}`,
-    icon: DollarSign,
-    change: `+${mockDashboardStats.revenueChange}%`,
-    changeType: 'positive' as const,
-    href: '/admin/settings',
-  },
-]
-
 export default function AdminDashboard() {
+  const { students, teachers, courses, stats: mockDashboardStats } = useData()
+
+  const statCards = [
+    {
+      title: 'Total Students',
+      value: students.length,
+      icon: GraduationCap,
+      change: '+12%',
+      changeType: 'positive' as const,
+      href: '/admin/students',
+    },
+    {
+      title: 'Active Teachers',
+      value: teachers.length,
+      icon: Users,
+      change: '+2',
+      changeType: 'positive' as const,
+      href: '/admin/teachers',
+    },
+    {
+      title: 'Total Classes',
+      value: courses.length,
+      icon: BookOpen,
+      change: '+3',
+      changeType: 'positive' as const,
+      href: '/admin/classes',
+    },
+    {
+      title: 'Revenue',
+      value: `$${mockDashboardStats.revenue.toLocaleString()}`,
+      icon: DollarSign,
+      change: `+${mockDashboardStats.revenueChange}%`,
+      changeType: 'positive' as const,
+      href: '/admin/settings',
+    },
+  ]
+
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockStudents.slice(0, 5).map((student) => (
+              {students.slice(0, 5).map((student) => (
                 <div key={student.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/30 transition-premium group">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10 group-hover:scale-105 transition-transform">
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {mockCourses.filter(c => c.status === 'active').slice(0, 6).map((course) => (
+            {courses.filter(c => c.status === 'active').slice(0, 6).map((course) => (
               <div 
                 key={course.id} 
                 className="group p-5 rounded-2xl border bg-card hover-lift transition-premium cursor-pointer"

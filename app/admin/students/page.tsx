@@ -56,11 +56,11 @@ import {
   BookOpen,
   Award,
 } from 'lucide-react'
-import { mockStudents, mockCourses } from '@/lib/mock-data'
+import { useData } from '@/contexts/data-context'
 import type { Student } from '@/lib/types'
 
 export default function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>(mockStudents)
+  const { students, courses: mockCourses, enrollStudent, removeStudent, updateStudentStatus } = useData()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -90,22 +90,18 @@ export default function StudentsPage() {
       enrolledAt: new Date().toISOString().split('T')[0],
       progress: 0,
     }
-    setStudents([...students, newStudent])
+    enrollStudent(newStudent)
     setIsAddDialogOpen(false)
-    toast.success('Student enrolled successfully')
   }
 
   const handleToggleStatus = (student: Student) => {
-    setStudents(students.map(s => 
-      s.id === student.id 
-        ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' }
-        : s
-    ))
-    toast.success(`Student ${student.status === 'active' ? 'deactivated' : 'activated'}`)
+    const nextStatus = student.status === 'active' ? 'inactive' : 'active'
+    updateStudentStatus(student.id, nextStatus)
+    toast.success(`Student ${nextStatus}`)
   }
 
   const handleDelete = (student: Student) => {
-    setStudents(students.filter(s => s.id !== student.id))
+    removeStudent(student.id)
     toast.success('Student removed successfully')
   }
 

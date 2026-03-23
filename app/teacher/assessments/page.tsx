@@ -37,12 +37,18 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { mockAssessments, mockCourses, mockQuestions } from '@/lib/mock-data'
+import { useData } from '@/contexts/data-context'
 import type { AssessmentTemplate } from '@/lib/types'
 
 export default function AssessmentsPage() {
   const { user } = useAuth()
-  const [assessments, setAssessments] = useState<AssessmentTemplate[]>(mockAssessments)
+  const { 
+    assessments, 
+    courses: mockCourses, 
+    questions: mockQuestions, 
+    publishAssessment, 
+    removeAssessment 
+  } = useData()
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateOpen, setIsCreateOpen] = useState(false)
 
@@ -77,13 +83,13 @@ export default function AssessmentsPage() {
       status: 'active',
     }
 
-    setAssessments([newAssessment, ...assessments])
+    publishAssessment(newAssessment)
     setIsCreateOpen(false)
     toast.success('Assessment generated successfully')
   }
 
   const handleDelete = (id: string) => {
-    setAssessments(assessments.filter(a => a.id !== id))
+    removeAssessment(id)
     toast.success('Assessment deleted')
   }
 

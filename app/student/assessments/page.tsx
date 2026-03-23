@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from "react"
-import { mockAssessments, mockQuestions } from "@/lib/mock-data"
+import { useData } from "@/contexts/data-context"
+import { useAuth } from "@/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -31,6 +32,8 @@ import {
 import type { AssessmentTemplate, Question } from "@/lib/types"
 
 export default function StudentAssessmentsPage() {
+  const { user } = useAuth()
+  const { assessments: mockAssessments, questions: mockQuestions, submitTestResult } = useData()
   const [activeTest, setActiveTest] = useState<AssessmentTemplate | null>(null)
   const [isTestEngineOpen, setIsTestEngineOpen] = useState(false)
   const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([])
@@ -131,14 +134,29 @@ export default function StudentAssessmentsPage() {
   const finishTest = (isAuto = false) => {
     const score = calculateScore()
     setFinalScore(score)
+    
+    // Submit result to global registry
+    if (activeTest && user) {
+      submitTestResult({
+        id: `test-res-${Date.now()}`,
+        templateId: activeTest.id,
+        studentId: user.id || 'student-1',
+        studentName: user.name || 'John Doe',
+        assignedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        status: 'Completed',
+        randomizedQuestions,
+        answers,
+        score,
+      })
+    }
+
     setShowResult(true)
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {})
     }
     if (isAuto) {
       toast.error("Assessment auto-submitted due to time or violations.")
-    } else {
-      toast.success("Assessment submitted successfully!")
     }
   }
 
