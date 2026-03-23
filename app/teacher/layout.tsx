@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
@@ -77,6 +78,24 @@ const teacherNavItems = [
     icon: Settings,
   },
 ]
+ 
+function TeacherSidebarHeader() {
+  const { state } = useSidebar()
+  return (
+    <SidebarHeader className="border-b border-white/5 py-8 transition-premium">
+      <div className="flex items-center justify-center w-full">
+        <Logo 
+          size={state === 'expanded' ? "md" : "sm"} 
+          variant="light" 
+          showText={state === 'expanded'} 
+          href="/teacher" 
+          orientation={state === 'expanded' ? "vertical" : "horizontal"}
+          className="transition-all duration-300"
+        />
+      </div>
+    </SidebarHeader>
+  )
+}
 
 export default function TeacherLayout({
   children,
@@ -121,18 +140,7 @@ export default function TeacherLayout({
   return (
     <SidebarProvider>
       <Sidebar className="border-r border-white/5 bg-sidebar transition-premium">
-        <SidebarHeader className="border-b border-white/5 py-8 transition-premium">
-          <div className="flex items-center justify-center w-full">
-            <Logo 
-              size={state === 'expanded' ? "md" : "sm"} 
-              variant="light" 
-              showText={state === 'expanded'} 
-              href="/teacher" 
-              orientation={state === 'expanded' ? "vertical" : "horizontal"}
-              className="transition-all duration-300"
-            />
-          </div>
-        </SidebarHeader>
+        <TeacherSidebarHeader />
 
         <SidebarContent className="px-3 py-6">
           <SidebarGroup>
