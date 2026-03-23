@@ -120,9 +120,17 @@ export default function AdminLayout({
   return (
     <SidebarProvider>
       <Sidebar className="border-r border-white/5 bg-sidebar transition-premium">
-        {/* Sidebar Header with Logo */}
-        <SidebarHeader className="border-b border-white/5 px-4 py-8 items-center justify-center">
-          <Logo size="md" variant="light" showText={true} href="/" orientation="vertical" />
+        <SidebarHeader className="border-b border-white/5 py-8 transition-premium">
+          <div className="flex items-center justify-center w-full">
+            <Logo 
+              size={state === 'expanded' ? "md" : "sm"} 
+              variant="light" 
+              showText={state === 'expanded'} 
+              href="/admin" 
+              orientation={state === 'expanded' ? "vertical" : "horizontal"}
+              className="transition-all duration-300"
+            />
+          </div>
         </SidebarHeader>
 
         {/* Navigation */}

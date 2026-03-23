@@ -95,7 +95,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-6 max-w-5xl mx-auto overflow-hidden">
+    <div className="w-full h-full flex flex-col items-center justify-center px-4 py-6 max-w-5xl mx-auto">
       {/* Logo Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
