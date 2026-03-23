@@ -17,7 +17,7 @@ interface LogoProps {
 
 const sizeMap = {
   sm: { image: 32, text: 'text-lg' },
-  md: { image: 48, text: 'text-xl' },
+  md: { image: 48, text: 'text-lg' },
   lg: { image: 64, text: 'text-2xl' },
   xl: { image: 80, text: 'text-3xl' },
   '2xl': { image: 120, text: 'text-4xl' },
@@ -65,7 +65,7 @@ export function Logo({
           textColorClass,
           orientation === 'vertical' ? 'items-center' : ''
         )}>
-          <span className={cn('font-serif font-medium tracking-tight whitespace-nowrap', textSize)}>
+          <span className={cn('font-serif font-medium tracking-tighter whitespace-nowrap', textSize)}>
             The Learners Academy
           </span>
           {loading && (

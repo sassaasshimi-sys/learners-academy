@@ -30,7 +30,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { Toaster } from '@/components/ui/sonner'
 import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 import {
@@ -108,22 +107,7 @@ export default function TeacherLayout({
   }
 
   if (!isAuthenticated || user?.role !== 'teacher') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="bg-destructive/10 text-destructive p-4 rounded-lg border border-destructive max-w-md text-center">
-          <h2 className="font-bold mb-2 text-lg">Access Denied</h2>
-          <p className="text-sm">You do not have permission to access the Teacher Portal.</p>
-          <p className="text-xs mt-2 opacity-70">Authenticated: {isAuthenticated ? 'Yes' : 'No'} | Role: {user?.role || 'None'}</p>
-          <Button 
-            variant="outline" 
-            className="mt-4 border-destructive text-destructive"
-            onClick={() => router.push('/auth/login')}
-          >
-            Back to Login
-          </Button>
-        </div>
-      </div>
-    )
+    return null
   }
 
   const userInitials = (user?.name || 'Teacher')
@@ -136,8 +120,8 @@ export default function TeacherLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar className="border-r border-primary/5 bg-card/80 backdrop-blur-xl">
-        <SidebarHeader className="border-b border-primary/5 px-6 py-8">
+      <Sidebar className="border-r border-white/5 bg-sidebar transition-premium">
+        <SidebarHeader className="border-b border-white/5 px-4 py-8">
           <Logo size="md" variant="light" showText={true} href="/" />
         </SidebarHeader>
 
@@ -177,7 +161,7 @@ export default function TeacherLayout({
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-primary/5 p-4">
+        <SidebarFooter className="border-t border-white/5 p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start gap-3 h-auto py-3 px-3 hover:bg-primary/5 rounded-xl transition-premium">
@@ -270,8 +254,6 @@ export default function TeacherLayout({
           {children}
         </main>
       </SidebarInset>
-
-      <Toaster position="top-right" richColors />
     </SidebarProvider>
   )
 }

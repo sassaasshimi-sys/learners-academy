@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { Lock, ClipboardList, LogOut, User, Bell } from "lucide-react"
-import { Toaster } from "@/components/ui/sonner"
 
 const assessmentNavItems = [
   {
@@ -36,14 +35,15 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
   const { user, isLoading, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+  const isStudentRoot = pathname === "/student"
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !user && !isStudentRoot) {
       router.push("/auth/login")
     } else if (!isLoading && user && user.role !== "student") {
       router.push(`/${user.role}`)
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading, router, isStudentRoot])
 
   if (isLoading) {
     return (
@@ -56,24 +56,23 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
     )
   }
 
-  if (!user || user.role !== "student") {
+  if ((!user || user.role !== "student") && !isStudentRoot) {
+    return null
+  }
+
+  if (!user && isStudentRoot) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="bg-destructive/10 text-destructive p-4 rounded-lg border border-destructive max-w-md text-center">
-          <h2 className="font-bold mb-2 text-lg">Access Denied</h2>
-          <p className="text-sm">You do not have permission to access the Student Portal.</p>
-          <p className="text-xs mt-2 opacity-70">Authenticated: {user ? 'Yes' : 'No'} | Role: {user?.role || 'None'}</p>
-          <Button 
-            variant="outline" 
-            className="mt-4 border-destructive text-destructive"
-            onClick={() => router.push('/auth/login')}
-          >
-            Back to Login
-          </Button>
-        </div>
+      <div className="min-h-screen bg-background">
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-foreground">
+          {children}
+        </main>
       </div>
     )
   }
+
+  // At this point, if we are here, we must have a user (because of the guard at line 57)
+  // But TypeScript needs a hint.
+  if (!user) return null
 
   return (
     <div className="min-h-screen bg-background">
@@ -129,7 +128,7 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2 px-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={user?.avatar} alt={user?.name || 'Student'} />
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {(user?.name || 'Student')
                         .split(" ")
@@ -141,16 +140,16 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium sm:inline-block">
-                    {user.name}
+                    {user?.name}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span>{user.name}</span>
+                    <span>{user?.name}</span>
                     <span className="text-xs font-normal text-muted-foreground">
-                      {user.email}
+                      {user?.email}
                     </span>
                   </div>
                 </DropdownMenuLabel>
@@ -199,7 +198,6 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 text-foreground">
         {children}
       </main>
-      <Toaster position="top-right" richColors />
     </div>
   )
 }
