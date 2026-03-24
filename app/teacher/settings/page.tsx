@@ -29,13 +29,13 @@ export default function TeacherSettingsPage() {
     },
     {
       label: 'Employee ID',
-      value: user?.employeeId || 'EMP-101', // Fallback for demo
+      value: user?.id ? `EMP-${user.id.toUpperCase().split('-').pop()}` : 'Not Assigned',
       icon: Hash,
       description: 'Institutional identification number'
     },
     {
       label: 'Phone Number',
-      value: user?.phone || '+92 300 1234567', // Fallback for demo
+      value: 'Not Provided in Registry',
       icon: Phone,
       description: 'Contact number for administrative purposes'
     }

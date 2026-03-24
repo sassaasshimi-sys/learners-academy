@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useData } from "@/contexts/data-context"
+import { useAuth } from "@/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,14 +26,15 @@ import { Progress } from "@/components/ui/progress"
 import { Search, Users, TrendingUp, Award, Mail, Phone, Calendar } from "lucide-react"
 
 export default function TeacherStudentsPage() {
+  const { user } = useAuth()
   const { students: mockStudents, courses: mockCourses, enrollments: mockEnrollments } = useData()
   const [searchQuery, setSearchQuery] = useState("")
   const [courseFilter, setCourseFilter] = useState("all")
   const [selectedStudent, setSelectedStudent] = useState<typeof mockStudents[0] | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
 
-  // Get students enrolled in teacher's courses (simulated - in real app would filter by teacher's courses)
-  const teacherCourses = mockCourses.filter(c => c.teacherId === "t1")
+  // Get students enrolled in teacher's courses
+  const teacherCourses = mockCourses.filter(c => c.teacherId === user?.id)
   const teacherCourseIds = teacherCourses.map(c => c.id)
   
   const studentsInTeacherCourses = mockStudents.filter(student => {

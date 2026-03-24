@@ -41,11 +41,13 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { useData } from '@/contexts/data-context'
+import { useAuth } from '@/contexts/auth-context'
 import type { Course } from '@/lib/types'
 
 export default function TeacherClassesPage() {
-  const { courses: mockCourses, students: mockStudents, assignments: mockAssignments } = useData()
-  const myCourses = mockCourses.filter(c => c.teacherId === 'teacher-1')
+  const { user } = useAuth()
+  const { courses: mockCourses, students: mockStudents, assignments: mockAssignments, enrollments: mockEnrollments } = useData()
+  const myCourses = mockCourses.filter(c => c.teacherId === user?.id)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -263,36 +265,41 @@ export default function TeacherClassesPage() {
 
               <TabsContent value="students" className="mt-4">
                 <div className="space-y-3">
-                  {mockStudents.slice(0, 5).map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-3 rounded-lg border">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {student.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{student.name}</p>
-                          <p className="text-sm text-muted-foreground">{student.email}</p>
+                  {mockStudents.filter(s => s.enrolledCourses.includes(selectedCourse.id)).map((student) => {
+                    const enrollment = mockEnrollments.find(e => e.studentId === student.id && e.courseId === selectedCourse.id)
+                    const progress = enrollment?.progress || 0
+                    
+                    return (
+                      <div key={student.id} className="flex items-center justify-between p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {student.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{student.name}</p>
+                            <p className="text-sm text-muted-foreground">{student.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right">
+                            <p className="text-sm font-medium">{progress}%</p>
+                            <Progress value={progress} className="w-16 h-1.5" />
+                          </div>
+                          <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
+                            {student.grade || '-'}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-right">
-                          <p className="text-sm font-medium">{student.progress}%</p>
-                          <Progress value={student.progress} className="w-16 h-1.5" />
-                        </div>
-                        <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
-                          {student.grade || '-'}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </TabsContent>
 
               <TabsContent value="assessments" className="mt-4">
                 <div className="space-y-3">
-                  {mockAssignments.filter(a => a.courseId === selectedCourse.id || a.teacherId === 'teacher-1').slice(0, 3).map((assignment) => (
+                  {mockAssignments.filter(a => a.courseId === selectedCourse.id).map((assignment) => (
                     <div key={assignment.id} className="p-4 rounded-lg border">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">

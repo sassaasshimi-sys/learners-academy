@@ -34,10 +34,13 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useData } from '@/contexts/data-context'
+import { useAuth } from '@/contexts/auth-context'
 
 export default function ResultsPage() {
+  const { user } = useAuth()
   const { submissions: mockSubmissions, students: mockStudents, assessments: mockAssessments, courses: mockCourses } = useData()
-  const myCourses = mockCourses.filter(c => c.teacherId === 'teacher-1')
+  const myCourses = mockCourses.filter(c => c.teacherId === user?.id)
+  const myCourseIds = myCourses.map(c => c.id)
   const [searchQuery, setSearchQuery] = useState('')
   const [phaseFilter, setPhaseFilter] = useState('all')
   const [classFilter, setClassFilter] = useState('all')
@@ -61,6 +64,25 @@ export default function ResultsPage() {
     
     return matchesSearch && matchesPhase && matchesClass
   })
+
+  // Dynamic Statistics
+  const allTeacherResults = mockSubmissions.filter(result => {
+    const student = mockStudents.find(s => s.id === result.studentId)
+    return student?.enrolledCourses.some(id => myCourseIds.includes(id))
+  })
+
+  // Pending Grading
+  const pendingCount = allTeacherResults.filter(r => r.status === 'pending').length
+  
+  // Averages
+  const gradedResults = allTeacherResults.filter(r => r.grade !== undefined && r.grade !== null) as (typeof allTeacherResults[0] & { grade: number })[]
+  const totalAvg = gradedResults.length > 0 ? Math.round(gradedResults.reduce((acc, r) => acc + r.grade, 0) / gradedResults.length) : 0
+
+  const firstTestResults = gradedResults.filter(r => mockAssessments.find(a => a.id === r.assignmentId)?.phase === 'First Test')
+  const firstTestAvg = firstTestResults.length > 0 ? Math.round(firstTestResults.reduce((acc, r) => acc + r.grade, 0) / firstTestResults.length) : 0
+
+  const lastTestResults = gradedResults.filter(r => mockAssessments.find(a => a.id === r.assignmentId)?.phase === 'Last Test')
+  const lastTestAvg = lastTestResults.length > 0 ? Math.round(lastTestResults.reduce((acc, r) => acc + r.grade, 0) / lastTestResults.length) : 0
 
   return (
     <div className="space-y-6">
@@ -87,25 +109,25 @@ export default function ResultsPage() {
             <CardDescription className="flex items-center gap-1">
               <TrendingUp className="w-3 h-3" /> Average Score
             </CardDescription>
-            <CardTitle className="text-2xl">84%</CardTitle>
+            <CardTitle className="text-2xl">{totalAvg > 0 ? `${totalAvg}%` : '--'}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Pending Grading</CardDescription>
-            <CardTitle className="text-2xl text-warning">12</CardTitle>
+            <CardTitle className="text-2xl text-warning">{pendingCount > 0 ? pendingCount : '--'}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>First Test Avg</CardDescription>
-            <CardTitle className="text-2xl">79%</CardTitle>
+            <CardTitle className="text-2xl">{firstTestAvg > 0 ? `${firstTestAvg}%` : '--'}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Last Test Avg</CardDescription>
-            <CardTitle className="text-2xl">--</CardTitle>
+            <CardTitle className="text-2xl">{lastTestAvg > 0 ? `${lastTestAvg}%` : '--'}</CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -242,19 +264,13 @@ export default function ResultsPage() {
             <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Randomized Questions Summary</p>
               <div className="flex justify-between text-sm">
-                <span>Objective Correct:</span>
-                <span className="font-bold">8/10</span>
+                <span>Evaluation Context:</span>
+                <span className="font-bold">{mockAssessments.find(a => a.id === selectedResult?.assignmentId)?.title || 'Current Assignment'}</span>
               </div>
               <div className="flex flex-col gap-1 pt-2">
-                <span className="text-sm font-medium">Subjective Prompt:</span>
-                <p className="text-sm text-muted-foreground bg-background p-2 rounded border">
-                "Summarize the main argument of the text..."
-                </p>
-              </div>
-              <div className="flex flex-col gap-1 pt-2">
-                <span className="text-sm font-medium">Student Answer:</span>
+                <span className="text-sm font-medium">Evaluation Reference:</span>
                 <p className="text-sm text-foreground bg-background p-2 rounded border">
-                  The main argument focuses on the impact of technology on language learning, specifically how it bridge gaps...
+                  [Submission Ref: {selectedResult?.id}] Reviewing student ID {selectedResult?.studentId}.
                 </p>
               </div>
             </div>

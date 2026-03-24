@@ -19,11 +19,27 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useData } from '@/contexts/data-context'
+import { useAuth } from '@/contexts/auth-context'
 
 export default function TeacherDashboard() {
-  const { courses: mockCourses, assignments: mockAssignments, submissions: mockSubmissions } = useData()
-  const myCourses = mockCourses.filter(c => c.teacherId === 'teacher-1')
-  const pendingSubmissions = mockSubmissions.filter(s => s.status === 'pending')
+  const { user } = useAuth()
+  const { 
+    courses: mockCourses, 
+    assignments: mockAssignments, 
+    submissions: mockSubmissions,
+    questions: mockQuestions,
+    enrollments: mockEnrollments
+  } = useData()
+  
+  const myCourses = mockCourses.filter(c => c.teacherId === user?.id)
+  const myCourseIds = myCourses.map(c => c.id)
+
+  const pendingSubmissions = mockSubmissions.filter(s => 
+    s.status === 'pending' && 
+    mockAssignments.find(a => a.id === s.assignmentId && myCourseIds.includes(a.courseId))
+  )
+
+  const activeTests = mockAssignments.filter(a => a.status === 'active' && myCourseIds.includes(a.courseId))
 
   const stats = [
     {
@@ -36,7 +52,7 @@ export default function TeacherDashboard() {
     },
     {
       title: 'Library Blocks',
-      value: 24, // Placeholder for total questions
+      value: mockQuestions.length,
       icon: Library,
       href: '/teacher/library',
       color: 'text-accent',
@@ -44,7 +60,7 @@ export default function TeacherDashboard() {
     },
     {
       title: 'Active Tests',
-      value: 3,
+      value: activeTests.length,
       icon: ClipboardList,
       href: '/teacher/assessments',
       color: 'text-warning',
@@ -149,7 +165,7 @@ export default function TeacherDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {mockAssignments.slice(0, 3).map((assignment) => (
+            {activeTests.slice(0, 3).map((assignment) => (
               <div key={assignment.id} className="p-4 rounded-xl border border-primary/5 hover:bg-muted/30 transition-premium group curso-pointer hover:shadow-sm">
                 <div className="flex items-start justify-between mb-2">
                   <div>
@@ -183,15 +199,22 @@ export default function TeacherDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
-              {myCourses.map((course) => (
-                <div key={course.id} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">{course.title}</span>
-                    <span className="text-muted-foreground">Avg. 84%</span>
+              {myCourses.map((course) => {
+                const courseEnrollments = mockEnrollments.filter(e => e.courseId === course.id)
+                const avgProgress = courseEnrollments.length > 0
+                  ? Math.round(courseEnrollments.reduce((acc, e) => acc + e.progress, 0) / courseEnrollments.length)
+                  : 0
+
+                return (
+                  <div key={course.id} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">{course.title}</span>
+                      <span className="text-muted-foreground">Avg. {avgProgress}%</span>
+                    </div>
+                    <Progress value={avgProgress} className="h-2" />
                   </div>
-                  <Progress value={84} className="h-2" />
-                </div>
-              ))}
+                )
+              })}
             </div>
           </CardContent>
         </Card>
