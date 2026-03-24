@@ -142,11 +142,9 @@ export default function TeacherLayout({
       <Sidebar className="border-r border-white/5 bg-sidebar transition-premium">
         <TeacherSidebarHeader />
 
-        <SidebarContent className="px-3 py-6">
+        <SidebarContent className="px-3 py-4">
           <SidebarGroup>
-            <SidebarGroupLabel className="text-editorial-label mb-4 opacity-50">
-              Academy Faculty
-            </SidebarGroupLabel>
+
             <SidebarGroupContent>
               <SidebarMenu className="gap-2">
                 {teacherNavItems.map((item) => {

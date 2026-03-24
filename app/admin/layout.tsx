@@ -142,11 +142,9 @@ export default function AdminLayout({
         <AdminSidebarHeader />
 
         {/* Navigation */}
-        <SidebarContent className="px-3 py-6">
+        <SidebarContent className="px-3 py-4">
           <SidebarGroup>
-            <SidebarGroupLabel className="text-editorial-label mb-4 opacity-50">
-              Academy Registry
-            </SidebarGroupLabel>
+
             <SidebarGroupContent>
               <SidebarMenu className="gap-2">
                 {adminNavItems.map((item) => {

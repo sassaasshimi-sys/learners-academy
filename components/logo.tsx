@@ -17,7 +17,7 @@ interface LogoProps {
 
 const sizeMap = {
   sm: { image: 32, text: 'text-lg' },
-  md: { image: 48, text: 'text-lg' },
+  md: { image: 48, text: 'text-[22px]' },
   lg: { image: 64, text: 'text-2xl' },
   xl: { image: 80, text: 'text-3xl' },
   '2xl': { image: 120, text: 'text-4xl' },
