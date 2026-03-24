@@ -38,7 +38,7 @@ import { useAuth } from '@/contexts/auth-context'
 
 export default function ResultsPage() {
   const { user } = useAuth()
-  const { submissions: mockSubmissions, students: mockStudents, assessments: mockAssessments, courses: mockCourses } = useData()
+  const { submissions: mockSubmissions, students: mockStudents, assessments: mockAssessments, courses: mockCourses, gradeSubmission } = useData()
   const myCourses = mockCourses.filter(c => c.teacherId === user?.id)
   const myCourseIds = myCourses.map(c => c.id)
   const [searchQuery, setSearchQuery] = useState('')
@@ -46,6 +46,8 @@ export default function ResultsPage() {
   const [classFilter, setClassFilter] = useState('all')
   const [selectedResult, setSelectedResult] = useState<any>(null)
   const [isGradeOpen, setIsGradeOpen] = useState(false)
+  const [gradeInput, setGradeInput] = useState('')
+  const [feedbackInput, setFeedbackInput] = useState('')
 
   const filteredResults = mockSubmissions.filter(result => {
     const student = mockStudents.find(s => s.id === result.studentId)
@@ -198,10 +200,10 @@ export default function ResultsPage() {
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
                             <span className="font-serif font-bold text-base text-foreground/80 group-hover:text-primary transition-colors">
-                              {student?.name}
+                              {result.studentName || 'Student Registry'}
                             </span>
                             <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-tighter">
-                              {student?.studentId}
+                              {result.studentId}
                             </span>
                           </div>
                         </td>
@@ -261,35 +263,62 @@ export default function ResultsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Randomized Questions Summary</p>
-              <div className="flex justify-between text-sm">
-                <span>Evaluation Context:</span>
-                <span className="font-bold">{mockAssessments.find(a => a.id === selectedResult?.assignmentId)?.title || 'Current Assignment'}</span>
-              </div>
-              <div className="flex flex-col gap-1 pt-2">
-                <span className="text-sm font-medium">Evaluation Reference:</span>
-                <p className="text-sm text-foreground bg-background p-2 rounded border">
-                  [Submission Ref: {selectedResult?.id}] Reviewing student ID {selectedResult?.studentId}.
+            <div className="rounded-lg border bg-muted/50 p-4 space-y-4 max-h-[300px] overflow-y-auto">
+              {selectedResult?.randomizedQuestions?.map((q: any, i: number) => (
+                <div key={q.id} className="space-y-1.5 pb-3 border-b border-border/50 last:border-0">
+                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Q{i+1}: {q.category}</p>
+                  <p className="text-xs font-medium text-foreground">{q.content}</p>
+                  <div className="p-2 rounded bg-background border text-xs">
+                    <span className="text-muted-foreground mr-2 font-bold uppercase text-[9px]">Answer:</span>
+                    {selectedResult?.answers?.[q.id] || 'No response provided.'}
+                  </div>
+                </div>
+              ))}
+              
+              <div className="bg-primary/5 p-3 rounded border border-primary/10">
+                <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" /> AI Audit Justification
+                </p>
+                <p className="text-xs italic text-muted-foreground">
+                  "{selectedResult?.aiJustification || 'No audit data available for this legacy record.'}"
                 </p>
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium">Final Score (%)</label>
-              <Input type="number" placeholder="e.g. 85" max="100" />
+              <label className="text-sm font-medium">Override Score (%)</label>
+              <Input 
+                type="number" 
+                placeholder={selectedResult?.grade?.toString()} 
+                value={gradeInput}
+                onChange={(e) => setGradeInput(e.target.value)}
+                max="100" 
+              />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Feedback</label>
-              <Textarea placeholder="Constructive feedback for the student..." rows={3} />
+              <label className="text-sm font-medium">Correction / Feedback</label>
+              <Textarea 
+                placeholder="Adjust feedback for the student..." 
+                value={feedbackInput}
+                onChange={(e) => setFeedbackInput(e.target.value)}
+                rows={3} 
+              />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsGradeOpen(false)}>Cancel</Button>
             <Button onClick={() => {
-              setIsGradeOpen(false)
-              toast.success('Grade submitted')
-            }}>Submit Grade</Button>
+              if (selectedResult) {
+                gradeSubmission(
+                  selectedResult.id, 
+                  parseInt(gradeInput) || selectedResult.grade || 0, 
+                  feedbackInput || selectedResult.feedback || ""
+                )
+                setIsGradeOpen(false)
+                setGradeInput('')
+                setFeedbackInput('')
+              }
+            }}>Publish Final Grade</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

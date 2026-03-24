@@ -42,8 +42,8 @@ const TIMINGS = [
 
 export default function StudentAccessPage() {
   const router = useRouter()
-  const { login } = useAuth()
-  const { courses, schedules, assessments } = useData()
+  const { login, updateUser } = useAuth()
+  const { courses, schedules, assessments, students } = useData()
   const [isVerifying, setIsVerifying] = useState(false)
   const [step, setStep] = useState(1)
 
@@ -75,11 +75,31 @@ export default function StudentAccessPage() {
         return
       }
 
+      // Search for student in registry to establish context
+      const studentRecord = students.find(s => s.studentId === studentId)
+      
+      if (!studentRecord) {
+        toast.error("Student Not Found", {
+          description: "Please verify your ID with the school administration."
+        })
+        setIsVerifying(false)
+        return
+      }
+
       // Establish authenticated session
       await login({
         email: 'student@learnersacademy.com',
         password: 'demo',
         role: 'student',
+      })
+
+      // Update session with the actual student record data
+      updateUser({
+        id: studentRecord.id,
+        name: studentRecord.name,
+        email: studentRecord.email,
+        enrolledCourses: studentRecord.enrolledCourses,
+        avatar: studentRecord.avatar
       })
       toast.success('Access Granted. Entering Assessment Portal...')
       router.push('/student/assessments')

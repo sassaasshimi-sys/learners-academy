@@ -83,6 +83,11 @@ export interface Submission {
   grade?: number
   feedback?: string
   fileUrl?: string
+  // AI Audit & Persistence
+  randomizedQuestions?: Question[]
+  answers?: Record<string, string>
+  aiFeedback?: string
+  aiJustification?: string
 }
 
 export interface DashboardStats {

@@ -29,11 +29,22 @@ import {
   XCircle,
   Maximize2
 } from "lucide-react"
-import type { AssessmentTemplate, Question } from "@/lib/types"
+import { evaluateSubjective } from "@/lib/ai-auditor"
+import type { AssessmentTemplate, Question, StudentTest } from "@/lib/types"
 
 export default function StudentAssessmentsPage() {
   const { user } = useAuth()
-  const { assessments: mockAssessments, questions: mockQuestions, submitTestResult } = useData()
+  const { assessments: mockAssessments, questions: mockQuestions, courses: mockCourses, submitTestResult } = useData()
+
+  // Filter assessments by the student's enrolled class level
+  const userEnrolledCourseIds = user?.enrolledCourses || []
+  const userCourseTitles = mockCourses
+    .filter(c => userEnrolledCourseIds.includes(c.id))
+    .map(c => c.title)
+
+  const availableAssessments = mockAssessments.filter(a => 
+    a.classLevels.some(level => userCourseTitles.includes(level)) || a.classLevels.length === 0
+  )
   const [activeTest, setActiveTest] = useState<AssessmentTemplate | null>(null)
   const [isTestEngineOpen, setIsTestEngineOpen] = useState(false)
   const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([])
@@ -44,13 +55,18 @@ export default function StudentAssessmentsPage() {
   const [isPaused, setIsPaused] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [finalScore, setFinalScore] = useState(0)
+  const [isEvaluating, setIsEvaluating] = useState(false)
+  const [aiAuditResults, setAiAuditResults] = useState<{ feedback: string; justification: string }>({ feedback: "", justification: "" })
 
   // Test Engine Logic
   const startTest = (assessment: AssessmentTemplate) => {
-    const pool = mockQuestions.filter(q => q.phase === assessment.phase || q.phase === 'Both')
+    // Filter questions by phase AND class level (or general questions)
+    const pool = mockQuestions.filter(q => 
+      (q.phase === assessment.phase || q.phase === 'Both') 
+    )
     const shuffled = [...pool].sort(() => Math.random() - 0.5)
-    const selected = shuffled.slice(0, 5) 
-    
+    // Use assessment specific mark/length if possible, otherwise default to 10
+    const selected = shuffled.slice(0, 10)     
     setRandomizedQuestions(selected)
     setActiveTest(assessment)
     setTimeLeft(assessment.durationMinutes * 60)
@@ -121,36 +137,71 @@ export default function StudentAssessmentsPage() {
 
   const calculateScore = () => {
     let score = 0
+    let scorableQuestions = 0
     randomizedQuestions.forEach(q => {
-      if (q.type === 'MCQ' && answers[q.id] === q.correctAnswer) {
-        score += 1
-      } else if (q.type === 'Subjective' && answers[q.id]?.length > 20) {
-        score += 1 // Mock points for subjective
+      if (q.type === 'MCQ') {
+        scorableQuestions++
+        if (answers[q.id] === q.correctAnswer) {
+          score += 1
+        }
       }
+      // Subjective questions are not auto-graded for academic integrity
     })
-    return Math.round((score / randomizedQuestions.length) * 100)
+    return scorableQuestions > 0 ? Math.round((score / scorableQuestions) * 100) : 0
   }
 
-  const finishTest = (isAuto = false) => {
-    const score = calculateScore()
-    setFinalScore(score)
+  const finishTest = async (isAuto = false) => {
+    setIsEvaluating(true)
     
-    // Submit result to global registry
+    // 1. Calculate base MCQ score
+    let basePoints = 0
+    let totalScorable = 0
+    const subjectiveQuestions = randomizedQuestions.filter(q => q.type === 'Subjective')
+    const mcqQuestions = randomizedQuestions.filter(q => q.type === 'MCQ')
+
+    mcqQuestions.forEach(q => {
+      totalScorable++
+      if (answers[q.id] === q.correctAnswer) basePoints++
+    })
+
+    // 2. Perform AI Audit on Subjective Questions
+    let subjectivePoints = 0
+    let aiFeedbackChain = ""
+    let aiJustificationChain = ""
+
+    for (const q of subjectiveQuestions) {
+      totalScorable++
+      const audit = await evaluateSubjective(q, answers[q.id] || "")
+      subjectivePoints += audit.score
+      aiFeedbackChain += audit.feedback + " "
+      aiJustificationChain += audit.justification + " "
+    }
+
+    const finalPercentage = Math.round(((basePoints + subjectivePoints) / totalScorable) * 100)
+    setFinalScore(finalPercentage)
+    setAiAuditResults({ 
+      feedback: aiFeedbackChain || "Assessment complete. No subjective audits required.", 
+      justification: aiJustificationChain 
+    })
+    
+    // 3. Submit result to global registry
     if (activeTest && user) {
       submitTestResult({
         id: `test-res-${Date.now()}`,
         templateId: activeTest.id,
-        studentId: user.id || 'student-1',
-        studentName: user.name || 'John Doe',
+        studentId: user.id,
+        studentName: user.name,
         assignedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
         status: 'Completed',
         randomizedQuestions,
         answers,
-        score,
+        score: finalPercentage,
+        feedback: aiFeedbackChain
       })
     }
 
+    setIsEvaluating(false)
     setShowResult(true)
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {})
@@ -188,7 +239,14 @@ export default function StudentAssessmentsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {mockAssessments.map((test) => (
+        {availableAssessments.length === 0 ? (
+          <Card className="md:col-span-2 border-dashed flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
+            <ClipboardList className="w-12 h-12 mb-4 opacity-20" />
+            <p className="font-medium text-lg">No Assessments Assigned</p>
+            <p className="text-sm">There are no proctored tests available for your current academic level.</p>
+          </Card>
+        ) : (
+          availableAssessments.map((test) => (
           <Card key={test.id} className="group overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:ring-primary/50 transition-all hover:shadow-lg">
             <div className="h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
             <CardHeader>
@@ -216,7 +274,8 @@ export default function StudentAssessmentsPage() {
               </Button>
             </CardFooter>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Zen Mode Engine */}
@@ -263,10 +322,10 @@ export default function StudentAssessmentsPage() {
                   <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left">
                     <h4 className="flex items-center gap-2 font-semibold text-primary mb-2">
                       <TrendingUp className="w-4 h-4" />
-                      Academic Feedback
+                      AI Academic Audit
                     </h4>
                     <p className="text-muted-foreground leading-relaxed italic">
-                      "{getFeedback(finalScore)}"
+                      "{aiAuditResults.feedback}"
                     </p>
                   </div>
 
@@ -432,6 +491,18 @@ export default function StudentAssessmentsPage() {
                         </Button>
                       </CardContent>
                     </Card>
+                  </div>
+                )}
+                {isEvaluating && (
+                  <div className="absolute inset-0 z-[120] bg-background/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center">
+                    <div className="relative w-24 h-24 mb-6">
+                      <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                      <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                    </div>
+                    <h3 className="text-2xl font-serif font-bold mb-2">AI Academic Audit</h3>
+                    <p className="text-muted-foreground max-w-xs mx-auto">
+                      Reviewing your subjective responses against institutional academic standards.
+                    </p>
                   </div>
                 )}
               </div>

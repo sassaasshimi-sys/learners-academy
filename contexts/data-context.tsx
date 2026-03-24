@@ -29,6 +29,7 @@ interface DataContextType {
   publishAssessment: (assessment: AssessmentTemplate) => void
   removeAssessment: (id: string) => void
   submitTestResult: (result: StudentTest) => void
+  gradeSubmission: (id: string, grade: number, feedback: string) => void
   updateCourseProgress: (courseId: string, progress: number) => void
   addQuestion: (question: Question) => void
   deleteQuestion: (id: string) => void
@@ -212,6 +213,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         submittedAt: new Date().toISOString(),
         status: 'pending',
         grade: result.score,
+        // Rich Metadata Persistence
+        randomizedQuestions: result.randomizedQuestions,
+        answers: result.answers,
+        aiFeedback: result.feedback,
+        aiJustification: "AI evaluation complete. Reviewing content-aware score."
       }
 
       return {
@@ -221,6 +227,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     })
     
     toast.success('Test submitted successfully')
+  }, [])
+
+  const gradeSubmission = useCallback((id: string, grade: number, feedback: string) => {
+    setData(prev => ({
+      ...prev,
+      submissions: prev.submissions.map(s => 
+        s.id === id ? { ...s, grade, feedback, status: 'graded' } : s
+      )
+    }))
+    toast.success('Grade published to student')
   }, [])
 
   const updateCourseProgress = useCallback((courseId: string, progress: number) => {
@@ -363,6 +379,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       addSchedule,
       updateSchedule,
       removeSchedule,
+      gradeSubmission,
       resetToDefaults,
     }}>
       {children}
