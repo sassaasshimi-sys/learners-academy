@@ -42,11 +42,13 @@ const CLASS_LEVELS = [
   'Speaking Class', 'Grammar Speaking Class', 'IELTS Preparation Course'
 ]
 
-const TIMINGS = [
-  '8:00 AM - 9:00 AM', '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM',
-  '11:00 AM - 12:00 PM', '12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM',
-  '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM', '4:00 PM - 5:00 PM',
-  '5:00 PM - 6:00 PM', '6:00 PM - 7:00 PM', '7:00 PM - 8:00 PM'
+const ACADEMY_SLOTS = [
+  { id: 'S-01', time: '03:00 PM - 04:00 PM' },
+  { id: 'S-02', time: '04:00 PM - 05:00 PM' },
+  { id: 'S-03', time: '05:00 PM - 06:00 PM' },
+  { id: 'S-04', time: '06:00 PM - 07:00 PM' },
+  { id: 'S-05', time: '07:00 PM - 08:00 PM' },
+  { id: 'S-06', time: '08:00 PM - 09:00 PM' },
 ]
 
 export default function SchedulePage() {
@@ -60,14 +62,16 @@ export default function SchedulePage() {
   )
 
   const handleAddSchedule = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const slotId = formData.get('slotId') as string
+    const slot = ACADEMY_SLOTS.find(s => s.id === slotId)
     
     const newSchedule: Schedule = {
       id: `sch-${Date.now()}`,
       classTitle: formData.get('className') as string,
       teacherName: formData.get('teacherName') as string,
-      timing: formData.get('timing') as string,
+      timing: slot?.time || 'Timing TBC',
+      slotId: slotId,
       roomNumber: formData.get('roomNumber') as string,
       days: ['Mon', 'Wed', 'Fri'], // Default days
     }
@@ -95,64 +99,71 @@ export default function SchedulePage() {
               Add Schedule
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-xl bg-card/90 backdrop-blur-xl border-primary/10">
             <DialogHeader>
-              <DialogTitle>Add New Schedule</DialogTitle>
-              <DialogDescription>
-                Assign a class level to a teacher and room.
+              <DialogTitle className="font-serif text-3xl font-bold tracking-tight">Schedule Registry</DialogTitle>
+              <DialogDescription className="text-editorial-meta">
+                Assign an academic session to a standardized slot and room.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddSchedule}>
-              <FieldGroup className="py-4 space-y-4">
-                <Field>
-                  <FieldLabel>Class Level</FieldLabel>
-                  <Select name="className" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLASS_LEVELS.map(level => (
-                        <SelectItem key={level} value={level}>{level}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>Teacher</FieldLabel>
-                  <Select name="teacherName" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select teacher" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockTeachers.map(teacher => (
-                        <SelectItem key={teacher.id} value={teacher.name}>{teacher.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>Class Timing</FieldLabel>
-                  <Select name="timing" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select one hour slot" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIMINGS.map(time => (
-                        <SelectItem key={time} value={time}>{time}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>Room Number</FieldLabel>
-                  <Input name="roomNumber" placeholder="e.g. 101, Lab A" required />
-                </Field>
+              <FieldGroup className="py-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Class Level</FieldLabel>
+                    <Select name="className" required>
+                      <SelectTrigger className="bg-background/50 h-10">
+                        <SelectValue placeholder="Select class" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CLASS_LEVELS.map(level => (
+                          <SelectItem key={level} value={level}>{level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Teacher Assignment</FieldLabel>
+                    <Select name="teacherName" required>
+                      <SelectTrigger className="bg-background/50 h-10">
+                        <SelectValue placeholder="Select teacher" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mockTeachers.map(teacher => (
+                          <SelectItem key={teacher.id} value={teacher.name}>{teacher.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Slot Selection</FieldLabel>
+                    <Select name="slotId" required>
+                      <SelectTrigger className="bg-background/50 h-10">
+                        <SelectValue placeholder="Choose timing slot" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ACADEMY_SLOTS.map(slot => (
+                          <SelectItem key={slot.id} value={slot.id}>
+                            {slot.id} ({slot.time})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Room Allocation</FieldLabel>
+                    <Input name="roomNumber" placeholder="e.g. 101, Lab A" required className="bg-background/50 h-10" />
+                  </Field>
+                </div>
               </FieldGroup>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)}>
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="ghost" onClick={() => setIsAddOpen(false)} className="text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit">Save Schedule</Button>
+                <Button type="submit" className="px-8 font-semibold uppercase tracking-wide">Publish Schedule</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -177,7 +188,7 @@ export default function SchedulePage() {
             <CardHeader className="pb-3 flex flex-row items-start justify-between">
               <div className="space-y-1">
                 <Badge variant="outline" className="text-[10px] tracking-widest uppercase font-bold text-primary border-primary/20 bg-primary/5">
-                  Confirmed
+                  {item.slotId || 'S-TBC'}
                 </Badge>
                 <CardTitle className="text-xl font-serif text-foreground leading-tight">{item.classTitle}</CardTitle>
                 <CardDescription className="font-medium text-accent">

@@ -109,6 +109,7 @@ export interface Schedule {
   timing: string
   roomNumber: string
   days: string[]
+  slotId?: string
 }
 
 export type QuestionCategory = 'Grammar' | 'Vocab & Idioms' | 'Listening' | 'Reading' | 'Speaking' | 'Writing'
