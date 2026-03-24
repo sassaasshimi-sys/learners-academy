@@ -8,6 +8,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -47,6 +55,7 @@ import {
   Calendar,
   BookOpen,
 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { mockCourses, mockTeachers } from '@/lib/mock-data'
 import type { Course } from '@/lib/types'
 
@@ -161,7 +170,7 @@ export default function ClassesPage() {
             Classes
           </h1>
           <p className="text-muted-foreground mt-1">
-            Create and manage your English language classes
+            Create and manage academic sessions and educational registry
           </p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -171,58 +180,61 @@ export default function ClassesPage() {
               Create Class
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-xl bg-card/90 backdrop-blur-xl border-primary/10">
             <DialogHeader>
-              <DialogTitle>Create New Class</DialogTitle>
-              <DialogDescription>
-                Fill in the details to schedule a new class.
+              <DialogTitle className="font-serif text-3xl font-bold tracking-tight">Class Registry</DialogTitle>
+              <DialogDescription className="text-editorial-meta">
+                Fill in the details to schedule a new academic session.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddCourse}>
-              <FieldGroup className="py-4 space-y-4">
-                <Field>
-                  <FieldLabel>Class Name</FieldLabel>
-                  <Select name="title" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select class level/type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLASS_LEVELS.map(level => (
-                        <SelectItem key={level} value={level}>{level}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+              <FieldGroup className="py-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Academic Level</FieldLabel>
+                    <Select name="title" required>
+                      <SelectTrigger className="bg-background/50 h-10 text-editorial-meta">
+                        <SelectValue placeholder="Select class level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CLASS_LEVELS.map(level => (
+                          <SelectItem key={level} value={level}>{level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Teacher Assignment</FieldLabel>
+                    <Input name="teacherName" placeholder="Instructor name" required className="bg-background/50 h-10" />
+                  </Field>
+                </div>
                 
-                <Field>
-                  <FieldLabel>Class Timing</FieldLabel>
-                  <Select name="schedule" required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select starting time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLASS_TIMES.map(time => (
-                        <SelectItem key={time} value={time}>{time}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Session Timing</FieldLabel>
+                    <Select name="schedule" required>
+                      <SelectTrigger className="bg-background/50 h-10 text-editorial-meta">
+                        <SelectValue placeholder="Starting time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CLASS_TIMES.map(time => (
+                          <SelectItem key={time} value={time}>{time}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-                <Field>
-                  <FieldLabel>Teacher Name</FieldLabel>
-                  <Input name="teacherName" placeholder="Enter teacher name" required />
-                </Field>
-
-                <Field>
-                  <FieldLabel>Room Number</FieldLabel>
-                  <Input name="roomNumber" placeholder="e.g. Room 302" required />
-                </Field>
+                  <Field>
+                    <FieldLabel className="text-editorial-label">Room Allocation</FieldLabel>
+                    <Input name="roomNumber" placeholder="e.g. Room 302" required className="bg-background/50 h-10" />
+                  </Field>
+                </div>
               </FieldGroup>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="ghost" onClick={() => setIsAddDialogOpen(false)} className="text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit">Create Class</Button>
+                <Button type="submit" className="px-8 font-semibold uppercase tracking-wide">Publish Class</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -230,36 +242,18 @@ export default function ClassesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Total Courses</CardDescription>
+            <CardDescription>Total Classes</CardDescription>
             <CardTitle className="text-3xl">{courses.length}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Active Courses</CardDescription>
+            <CardDescription>Active Classes</CardDescription>
             <CardTitle className="text-3xl text-success">
               {courses.filter(c => c.status === 'active').length}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Enrollment</CardDescription>
-            <CardTitle className="text-3xl">
-              {courses.reduce((acc, c) => acc + c.enrolled, 0)}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Avg. Capacity Used</CardDescription>
-            <CardTitle className="text-3xl">
-              {Math.round(
-                courses.reduce((acc, c) => acc + (c.enrolled / c.capacity * 100), 0) / courses.length
-              )}%
             </CardTitle>
           </CardHeader>
         </Card>
@@ -279,7 +273,7 @@ export default function ClassesPage() {
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search courses..."
+            placeholder="Search classes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -287,120 +281,102 @@ export default function ClassesPage() {
         </div>
       </div>
 
-      {/* Courses Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredCourses.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12 text-center">
-              <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No courses found</p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredCourses.map((course) => (
-            <Card key={course.id} className="hover-lift">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <Badge variant="outline" className={getLevelColor(course.level)}>
-                    {course.level}
-                  </Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="-mr-2 -mt-2">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => {
-                        setSelectedCourse(course)
-                        setIsViewDialogOpen(true)
-                      }}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      {course.status === 'draft' && (
-                        <DropdownMenuItem onClick={() => handleStatusChange(course, 'active')}>
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Publish
-                        </DropdownMenuItem>
-                      )}
-                      {course.status === 'active' && (
-                        <DropdownMenuItem onClick={() => handleStatusChange(course, 'completed')}>
-                          <Archive className="w-4 h-4 mr-2" />
-                          Mark Complete
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => handleDelete(course)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <CardTitle className="text-lg leading-snug line-clamp-2 mt-2">
-                  {course.title}
-                </CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {course.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Instructor</span>
-                  <span className="font-medium">{course.teacherName}</span>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Enrollment</span>
-                    <span className="font-medium">{course.enrolled}/{course.capacity}</span>
-                  </div>
-                  <Progress value={(course.enrolled / course.capacity) * 100} className="h-2" />
-                </div>
-
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    <span>{course.enrolled}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <Badge className={getStatusColor(course.status)}>
-                    {course.status}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(course.startDate).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-muted/30">
+              <TableRow>
+                <TableHead className="w-[150px] font-bold text-foreground">Room Number</TableHead>
+                <TableHead className="font-bold text-foreground">Class</TableHead>
+                <TableHead className="font-bold text-foreground">Class Timing</TableHead>
+                <TableHead className="font-bold text-foreground">Teacher</TableHead>
+                <TableHead className="w-[70px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCourses.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                    <BookOpen className="w-12 h-12 mb-4 opacity-20 mx-auto" />
+                    No classes found matching your criteria.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredCourses.map((course) => (
+                  <TableRow key={course.id} className="group hover:bg-muted/20 transition-colors">
+                    <TableCell className="font-bold tracking-tighter text-lg text-primary">
+                      {course.roomNumber || 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-serif font-bold text-base leading-none mb-1">{course.title}</span>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className={cn("text-[9px] h-4 px-1 py-0 uppercase tracking-tighter", getLevelColor(course.level))}>
+                            {course.level}
+                          </Badge>
+                          <Badge className={cn("text-[8px] h-3.5 px-1 py-0 uppercase tracking-tighter", getStatusColor(course.status))}>
+                            {course.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium text-sm text-editorial-meta">
+                      {course.schedule}
+                    </TableCell>
+                    <TableCell className="font-serif font-bold text-base">
+                      {course.teacherName}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-premium">
+                          <DropdownMenuLabel>Registry Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => {
+                            setSelectedCourse(course)
+                            setIsViewDialogOpen(true)
+                          }}>
+                            <Eye className="w-4 h-4 mr-2" />
+                            Session Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Parameters
+                          </DropdownMenuItem>
+                          {course.status === 'active' && (
+                            <DropdownMenuItem onClick={() => handleStatusChange(course, 'completed')}>
+                              <Archive className="w-4 h-4 mr-2" />
+                              Mark Complete
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDelete(course)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Registry
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* View Course Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Course Details</DialogTitle>
+            <DialogTitle className="font-serif text-2xl font-bold">Class Details</DialogTitle>
           </DialogHeader>
           {selectedCourse && (
             <div className="space-y-6 py-4">
