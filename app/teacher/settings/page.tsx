@@ -42,49 +42,46 @@ export default function TeacherSettingsPage() {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="font-serif text-3xl font-bold text-foreground">
           Profile Settings
         </h1>
-        <p className="text-muted-foreground mt-2 text-editorial-label">
-          Manage your professional identity within The Learners Academy.
+        <p className="text-muted-foreground mt-1 text-editorial-meta">
+          Manage your professional identity within the academy registry.
         </p>
       </div>
 
       <Card className="border-none shadow-sm ring-1 ring-border overflow-hidden bg-card">
-        <CardHeader className="bg-muted/30 border-b pb-6">
+        <CardHeader className="bg-muted/30 border-b pb-4 pt-4 px-5">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-serif text-primary border border-primary/20">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-serif text-primary border border-primary/20">
               {user?.name?.split(' ').map(n => n[0]).join('') || 'T'}
             </div>
             <div>
-              <CardTitle className="font-serif text-2xl">{user?.name}</CardTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline" className="text-[10px] tracking-widest uppercase font-bold text-primary border-primary/20 bg-primary/5">
-                  Teacher
+              <CardTitle className="font-serif text-xl leading-none">{user?.name}</CardTitle>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="outline" className="text-[9px] h-4 px-1 py-0 tracking-widest uppercase font-bold text-primary border-primary/20 bg-primary/5">
+                  Registry: Teacher
                 </Badge>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <ShieldCheck className="w-3 h-3 text-success" />
-                  <span>Verified Professional</span>
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
+                  <ShieldCheck className="w-3 h-3 text-success/70" />
+                  <span>Verified Faculty</span>
                 </div>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="divide-y divide-border">
+          <div className="grid grid-cols-2 gap-px bg-border/50">
             {profileData.map((item, index) => (
-              <div key={index} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-muted/10 transition-colors">
-                <div className="flex gap-4">
-                  <div className="p-2 rounded-lg bg-muted flex items-center justify-center h-fit">
-                    <item.icon className="w-5 h-5 text-muted-foreground" />
+              <div key={index} className="bg-card p-5 hover:bg-muted/10 transition-colors group">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{item.label}</p>
+                    <item.icon className="w-3.5 h-3.5 text-primary/30 group-hover:text-primary/60 transition-colors" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">{item.label}</p>
-                    <p className="font-medium text-lg leading-none">{item.value}</p>
-                    <p className="text-sm text-muted-foreground mt-2">{item.description}</p>
-                  </div>
+                  <p className="font-medium text-base text-foreground leading-tight">{item.value}</p>
                 </div>
               </div>
             ))}
@@ -92,12 +89,19 @@ export default function TeacherSettingsPage() {
         </CardContent>
       </Card>
 
-      <div className="rounded-xl bg-accent/5 border border-accent/10 p-6">
-        <h3 className="font-serif font-semibold text-accent mb-2">Administrative Note</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          The records above are synchronized with the central administration database. 
-          If you need to update any information, please contact the Registrar&apos;s Office.
-        </p>
+      <div className="rounded-xl bg-primary/[0.03] border border-primary/10 p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-1 rounded bg-primary/10 mt-0.5">
+            <ShieldCheck className="w-3 h-3 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-serif font-bold text-primary text-sm uppercase tracking-wider">Administrative Registry</h3>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
+              These records are synchronized with the central administration database. 
+              Contact the Registrar&apos;s Office to initiate any institutional updates.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
